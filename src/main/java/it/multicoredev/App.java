@@ -39,7 +39,6 @@ public class App {
     public static final Logger LOGGER = LoggerFactory.getLogger("App");
 
     void run() {
-        System.out.println("Hello World!");
         Window window = Window.create(1920, 1080, "Test Window");
         window.run();
     }

@@ -78,14 +78,17 @@ public class Window {
         switch (scene) {
             case 0 -> {
                 currentScene = new LevelEditorScene();
+                currentScene.init();
                 LOGGER.info("Scene set to 0");
             }
             case 1 -> {
                 currentScene = new LevelScene();
+                currentScene.init();
                 LOGGER.info("Scene set to 1");
             }
             default -> {
-                assert false : "Invalid scene '" + scene + "'";
+                LOGGER.error("Scene not found");
+                System.exit(-1);
             }
         }
     }
