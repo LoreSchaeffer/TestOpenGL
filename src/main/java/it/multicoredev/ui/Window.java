@@ -1,5 +1,9 @@
 package it.multicoredev.ui;
 
+import it.multicoredev.ui.scenes.LevelEditorScene;
+import it.multicoredev.ui.scenes.LevelScene;
+import it.multicoredev.ui.scenes.Scene;
+import it.multicoredev.utils.Time;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -46,9 +50,11 @@ public class Window {
     private int height;
     private String title;
     private long windowId;
-    private float[] windowColor = new float[]{0f, 0f, 0f, 1f};
+    private float[] windowColor = new float[]{1f, 1f, 1f, 1f};
 
     private static Window window = null;
+
+    private static Scene currentScene = null;
 
     // Callback documentation https://www.glfw.org/docs/3.3/input_guide.html
 
@@ -58,9 +64,30 @@ public class Window {
         this.title = title;
     }
 
-    public static Window get(int width, int height, String title) {
+    public static Window create(int width, int height, String title) {
         if (window == null) window = new Window(width, height, title);
         return window;
+    }
+
+    public static Window get() {
+        if (window == null) throw new IllegalStateException("Window not initialized");
+        return window;
+    }
+
+    public static void setScene(int scene) {
+        switch (scene) {
+            case 0 -> {
+                currentScene = new LevelEditorScene();
+                LOGGER.info("Scene set to 0");
+            }
+            case 1 -> {
+                currentScene = new LevelScene();
+                LOGGER.info("Scene set to 1");
+            }
+            default -> {
+                assert false : "Invalid scene '" + scene + "'";
+            }
+        }
     }
 
     public void run() {
@@ -78,7 +105,18 @@ public class Window {
         glfwSetErrorCallback(null).free();
     }
 
-    public void init() {
+    public void setBackgroundColor(float r, float g, float b, float a) {
+        windowColor[0] = r;
+        windowColor[1] = g;
+        windowColor[2] = b;
+        windowColor[3] = a;
+    }
+
+    public float[] getBackgroundColor() {
+        return windowColor;
+    }
+
+    private void init() {
         //Setup an error callback
         GLFWErrorCallback.createPrint(System.err).set();
 
@@ -116,9 +154,15 @@ public class Window {
         // creates the GLCapabilities instance and makes the OpenGL
         // bindings available for use.
         GL.createCapabilities();
+
+        Window.setScene(0);
     }
 
-    public void loop() {
+    private void loop() {
+        float beginTime = Time.getTime();
+        float endTime;
+        float dt = -1.0f;
+
         while (!glfwWindowShouldClose(windowId)) {
             // Poll events
             glfwPollEvents();
@@ -126,20 +170,16 @@ public class Window {
             glClearColor(windowColor[0], windowColor[1], windowColor[2], windowColor[3]);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            if (MouseListener.isMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)) {
-                windowColor[0] = MouseListener.getX() / (float) width;
-                windowColor[1] = MouseListener.getY() / (float) height;
-            } else {
-                windowColor[2] = MouseListener.getX() / (float) width;
-            }
+            if (dt >= 0) currentScene.update(dt);
 
-            if (KeyListener.isKeyPressed(GLFW_KEY_ESCAPE)) {
-                windowColor[0] = 0f;
-                windowColor[1] = 0f;
-                windowColor[2] = 0f;
-            }
+            LOGGER.info("FPS: " + (1.0f / dt));
 
             glfwSwapBuffers(windowId);
+
+            endTime = Time.getTime();
+            // Delta time
+            dt = endTime - beginTime;
+            beginTime = endTime;
         }
     }
 }

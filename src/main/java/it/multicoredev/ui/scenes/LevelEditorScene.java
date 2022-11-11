@@ -1,8 +1,11 @@
-package it.multicoredev;
+package it.multicoredev.ui.scenes;
 
+import it.multicoredev.ui.KeyListener;
 import it.multicoredev.ui.Window;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.awt.event.KeyEvent;
+
+import static it.multicoredev.App.LOGGER;
 
 /**
  * BSD 3-Clause License
@@ -35,12 +38,27 @@ import org.slf4j.LoggerFactory;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class App {
-    public static final Logger LOGGER = LoggerFactory.getLogger("App");
+public class LevelEditorScene extends Scene {
+    private boolean changingScene = false;
+    private float timeToChangeScene = 2.0f;
 
-    void run() {
-        System.out.println("Hello World!");
-        Window window = Window.create(1920, 1080, "Test Window");
-        window.run();
+    public LevelEditorScene() {
+        LOGGER.info("LevelEditorScene created");
+    }
+
+    @Override
+    public void update(float dt) {
+        if (!changingScene && KeyListener.isKeyPressed(KeyEvent.VK_SPACE)) changingScene = true;
+
+        if (changingScene && timeToChangeScene > 0) {
+            timeToChangeScene -= dt;
+
+            Window window = Window.get();
+
+            float[] currentColor = window.getBackgroundColor();
+            window.setBackgroundColor(currentColor[0] - (dt * 5.0f), currentColor[1] - (dt * 5.0f), currentColor[2] - (dt * 5.0f), currentColor[3]);
+        } else if (changingScene) {
+            Window.setScene(1);
+        }
     }
 }

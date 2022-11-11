@@ -1,8 +1,4 @@
-package it.multicoredev;
-
-import it.multicoredev.ui.Window;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package it.multicoredev.ui.scenes;
 
 /**
  * BSD 3-Clause License
@@ -35,12 +31,10 @@ import org.slf4j.LoggerFactory;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class App {
-    public static final Logger LOGGER = LoggerFactory.getLogger("App");
+public abstract class Scene {
 
-    void run() {
-        System.out.println("Hello World!");
-        Window window = Window.create(1920, 1080, "Test Window");
-        window.run();
+    public Scene() {
     }
+
+    public abstract void update(float dt);
 }
