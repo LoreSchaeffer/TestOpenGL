@@ -1,4 +1,4 @@
-package it.multicoredev.ui;
+package it.multicoredev.ui.listeners;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;

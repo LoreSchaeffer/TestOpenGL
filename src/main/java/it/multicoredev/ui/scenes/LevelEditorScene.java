@@ -1,6 +1,9 @@
 package it.multicoredev.ui.scenes;
 
+import it.multicoredev.ui.Camera;
 import it.multicoredev.ui.renderer.Shader;
+import it.multicoredev.utils.Time;
+import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
@@ -49,10 +52,10 @@ public class LevelEditorScene extends Scene {
 
     // x, y, z, r, g, b, 1
     private final float[] vertexArray = {
-            0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // bottom right (0)
-            -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // top left (1)
-            0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right (2)
-            -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, // bottom left (3)
+            100.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // bottom right (0)
+            0.5f, 100.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // top left (1)
+            100.5f, 100.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right (2)
+            -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, // bottom left (3)
     };
 
     // Must be in counter-clockwise order
@@ -71,6 +74,8 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void init() {
+        this.camera = new Camera(new Vector2f());
+
         defShader = new Shader("assets/shaders/default.glsl");
         defShader.compileAndLink();
 
@@ -110,7 +115,13 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void update(float dt) {
+        camera.position.x -= dt * 50f;
+        camera.position.y -= dt * 20f;
+
         defShader.use();
+        defShader.uploadMat4f("uProjection", camera.getProjectionMatrix());
+        defShader.uploadMat4f("uView", camera.getViewMatrix());
+        defShader.uploadFloat("uTime", Time.getTime());
 
         // Bind the vertex
         glBindVertexArray(vaoId);
