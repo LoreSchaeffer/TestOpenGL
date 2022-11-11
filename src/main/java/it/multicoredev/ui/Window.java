@@ -175,7 +175,7 @@ public class Window {
 
             if (dt >= 0) currentScene.update(dt);
 
-            LOGGER.info("FPS: " + (1.0f / dt));
+            //LOGGER.info("FPS: " + (1.0f / dt));
 
             glfwSwapBuffers(windowId);
 
