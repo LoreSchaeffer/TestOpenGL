@@ -44,10 +44,10 @@ import static org.lwjgl.opengl.GL20.*;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 public class Shader {
+    private final File file;
+
     private int shaderProgramId;
     private boolean inUse = false;
-
-    private File file;
     private String vertexSrc;
     private String fragmentSrc;
 
@@ -184,5 +184,11 @@ public class Shader {
         int varLocation = glGetUniformLocation(shaderProgramId, varName);
         use();
         glUniform1i(varLocation, value);
+    }
+
+    public void uploadTexture(String varName, int slot) {
+        int varLocation = glGetUniformLocation(shaderProgramId, varName);
+        use();
+        glUniform1i(varLocation, slot);
     }
 }

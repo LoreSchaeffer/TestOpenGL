@@ -2,6 +2,7 @@ package it.multicoredev.ui.scenes;
 
 import it.multicoredev.ui.Camera;
 import it.multicoredev.ui.renderer.Shader;
+import it.multicoredev.ui.renderer.Texture;
 import it.multicoredev.utils.Time;
 import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
@@ -46,16 +47,14 @@ import static org.lwjgl.opengl.GL20.*;
  */
 public class LevelEditorScene extends Scene {
     private Shader defShader;
-    private int vertexId;
-    private int fragmentId;
-    private int shaderProgram;
+    private Texture testTexture;
 
-    // x, y, z, r, g, b, 1
+    // x, y, z, r, g, b, a, u
     private final float[] vertexArray = {
-            100.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // bottom right (0)
-            0.5f, 100.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, // top left (1)
-            100.5f, 100.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right (2)
-            -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, // bottom left (3)
+            100.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1, 1, // bottom right (0)
+            0.5f, 100.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0, 0, // top left (1)
+            100.5f, 100.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1, 0, // top right (2)
+            -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0, 1, // bottom left (3)
     };
 
     // Must be in counter-clockwise order
@@ -69,7 +68,6 @@ public class LevelEditorScene extends Scene {
     private int eboId; // Element Buffer Object
 
     public LevelEditorScene() {
-
     }
 
     @Override
@@ -78,6 +76,8 @@ public class LevelEditorScene extends Scene {
 
         defShader = new Shader("assets/shaders/default.glsl");
         defShader.compileAndLink();
+
+        testTexture = new Texture("assets/textures/diamond_ore.png");
 
         // Generate VAO, VBO, EBO buffer objects and send data to GPU
         vaoId = glGenVertexArrays();
@@ -103,14 +103,17 @@ public class LevelEditorScene extends Scene {
         // Add the vertex attribute pointers
         int positionSize = 3;
         int colorSize = 4;
-        int floatSizeBytes = 4;
-        int vertexSizeBytes = (positionSize + colorSize) * floatSizeBytes;
+        int uvSize = 2;
+        int vertexSizeBytes = (positionSize + colorSize + uvSize) * Float.BYTES;
 
         glVertexAttribPointer(0, positionSize, GL_FLOAT, false, vertexSizeBytes, 0);
         glEnableVertexAttribArray(0);
 
-        glVertexAttribPointer(1, colorSize, GL_FLOAT, false, vertexSizeBytes, positionSize * floatSizeBytes);
+        glVertexAttribPointer(1, colorSize, GL_FLOAT, false, vertexSizeBytes, positionSize * Float.BYTES);
         glEnableVertexAttribArray(1);
+
+        glVertexAttribPointer(2, uvSize, GL_FLOAT, false, vertexSizeBytes, (positionSize + colorSize) * Float.BYTES);
+        glEnableVertexAttribArray(2);
     }
 
     @Override
@@ -119,6 +122,12 @@ public class LevelEditorScene extends Scene {
         camera.position.y -= dt * 20f;
 
         defShader.use();
+
+        // Upload texture to shader
+        defShader.uploadTexture("uTexture", 0);
+        glActiveTexture(GL_TEXTURE0);
+        testTexture.bind();
+
         defShader.uploadMat4f("uProjection", camera.getProjectionMatrix());
         defShader.uploadMat4f("uView", camera.getViewMatrix());
         defShader.uploadFloat("uTime", Time.getTime());
@@ -129,12 +138,14 @@ public class LevelEditorScene extends Scene {
         // Enable the vertex attribute pointers
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
 
         glDrawElements(GL_TRIANGLES, elementArray.length, GL_UNSIGNED_INT, 0);
 
         // Unbind everything
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
 
         glBindVertexArray(0);
         defShader.detach();

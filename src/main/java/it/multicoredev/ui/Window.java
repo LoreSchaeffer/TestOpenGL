@@ -52,7 +52,7 @@ public class Window {
     private int height;
     private String title;
     private long windowId;
-    private float[] windowColor = new float[]{1f, 1f, 1f, 1f};
+    private float[] windowColor = new float[]{0.1f, 0.1f, 0.1f, 0.1f};
 
     private static Window window = null;
 
