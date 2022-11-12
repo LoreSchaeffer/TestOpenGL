@@ -1,10 +1,6 @@
-package it.multicoredev.ui.scenes;
+package it.multicoredev.ui.components;
 
-import it.multicoredev.ui.Camera;
-import it.multicoredev.ui.GameObject;
-
-import java.util.ArrayList;
-import java.util.List;
+import it.multicoredev.ui.Component;
 
 /**
  * BSD 3-Clause License
@@ -37,25 +33,17 @@ import java.util.List;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public abstract class Scene {
-    protected Camera camera;
-    protected final List<GameObject> gameObjects = new ArrayList<>();
-    private boolean isRunning = false;
+public class FontRenderer extends Component {
 
-    public Scene() {
-    }
-
-    public void init() {
-    }
-
+    @Override
     public void start() {
-        gameObjects.forEach(GameObject::start);
+        if (gameObject.getComponent(SpriteRenderer.class) != null) {
+            System.out.println("Found FontRenderer!");
+        }
     }
 
-    public void addGameObject(GameObject obj) {
-        gameObjects.add(obj);
-        if (isRunning) obj.start();
-    }
+    @Override
+    public void update(float dt) {
 
-    public abstract void update(float dt);
+    }
 }

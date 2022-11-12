@@ -1,10 +1,6 @@
-package it.multicoredev.ui.scenes;
+package it.multicoredev.ui.components;
 
-import it.multicoredev.ui.Camera;
-import it.multicoredev.ui.GameObject;
-
-import java.util.ArrayList;
-import java.util.List;
+import it.multicoredev.ui.Component;
 
 /**
  * BSD 3-Clause License
@@ -37,25 +33,19 @@ import java.util.List;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public abstract class Scene {
-    protected Camera camera;
-    protected final List<GameObject> gameObjects = new ArrayList<>();
-    private boolean isRunning = false;
+public class SpriteRenderer extends Component {
+    private boolean firstUpdate = false;
 
-    public Scene() {
-    }
-
-    public void init() {
-    }
-
+    @Override
     public void start() {
-        gameObjects.forEach(GameObject::start);
+        System.out.println("I'm starting...");
     }
 
-    public void addGameObject(GameObject obj) {
-        gameObjects.add(obj);
-        if (isRunning) obj.start();
+    @Override
+    public void update(float dt) {
+        if (!firstUpdate) {
+            firstUpdate = true;
+            System.out.println("I'm updating!");
+        }
     }
-
-    public abstract void update(float dt);
 }

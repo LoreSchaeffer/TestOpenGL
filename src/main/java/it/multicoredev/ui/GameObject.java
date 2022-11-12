@@ -1,10 +1,9 @@
-package it.multicoredev.ui.scenes;
-
-import it.multicoredev.ui.Camera;
-import it.multicoredev.ui.GameObject;
+package it.multicoredev.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static it.multicoredev.App.LOGGER;
 
 /**
  * BSD 3-Clause License
@@ -37,25 +36,42 @@ import java.util.List;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public abstract class Scene {
-    protected Camera camera;
-    protected final List<GameObject> gameObjects = new ArrayList<>();
-    private boolean isRunning = false;
+public class GameObject {
+    private final String name;
+    private final List<Component> components = new ArrayList<>();
 
-    public Scene() {
+    public GameObject(String name) {
+        this.name = name;
     }
 
-    public void init() {
+    public <T extends Component> T getComponent(Class<T> component) {
+        for (Component c : components) {
+            if (component.isAssignableFrom(c.getClass())) {
+                try {
+                    return component.cast(c);
+                } catch (ClassCastException e) {
+                    LOGGER.error(e.getMessage(), e);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public <T extends Component> void removeComponent(Class<T> component) {
+        components.removeIf(c -> component.isAssignableFrom(c.getClass()));
+    }
+
+    public void addComponent(Component component) {
+        components.add(component);
+        component.setGameObject(this);
+    }
+
+    public void update(float dt) {
+        components.forEach(c -> c.update(dt));
     }
 
     public void start() {
-        gameObjects.forEach(GameObject::start);
+        components.forEach(Component::start);
     }
-
-    public void addGameObject(GameObject obj) {
-        gameObjects.add(obj);
-        if (isRunning) obj.start();
-    }
-
-    public abstract void update(float dt);
 }

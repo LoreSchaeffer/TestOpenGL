@@ -1,6 +1,9 @@
 package it.multicoredev.ui.scenes;
 
 import it.multicoredev.ui.Camera;
+import it.multicoredev.ui.GameObject;
+import it.multicoredev.ui.components.FontRenderer;
+import it.multicoredev.ui.components.SpriteRenderer;
 import it.multicoredev.ui.renderer.Shader;
 import it.multicoredev.ui.renderer.Texture;
 import it.multicoredev.utils.Time;
@@ -9,7 +12,9 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.UUID;
 
+import static it.multicoredev.App.LOGGER;
 import static org.lwjgl.opengl.ARBVertexArrayObject.glBindVertexArray;
 import static org.lwjgl.opengl.ARBVertexArrayObject.glGenVertexArrays;
 import static org.lwjgl.opengl.GL20.*;
@@ -49,12 +54,14 @@ public class LevelEditorScene extends Scene {
     private Shader defShader;
     private Texture testTexture;
 
+    private GameObject testObj;
+
     // x, y, z, r, g, b, a, u
     private final float[] vertexArray = {
-            100.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1, 1, // bottom right (0)
-            0.5f, 100.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0, 0, // top left (1)
-            100.5f, 100.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1, 0, // top right (2)
-            -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0, 1, // bottom left (3)
+            100.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1, 1, // bottom right (0)
+            0.5f, 100.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0, 0, // top left (1)
+            100.5f, 100.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1, 0, // top right (2)
+            -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0, 1, // bottom left (3)
     };
 
     // Must be in counter-clockwise order
@@ -72,6 +79,11 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void init() {
+        testObj = new GameObject("test_object");
+        testObj.addComponent(new SpriteRenderer());
+        testObj.addComponent(new FontRenderer());
+        addGameObject(testObj);
+
         this.camera = new Camera(new Vector2f());
 
         defShader = new Shader("assets/shaders/default.glsl");
@@ -118,8 +130,8 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void update(float dt) {
-        camera.position.x -= dt * 50f;
-        camera.position.y -= dt * 20f;
+        camera.position.x -= dt * 25f;
+        camera.position.y -= dt * 10f;
 
         defShader.use();
 
@@ -149,5 +161,7 @@ public class LevelEditorScene extends Scene {
 
         glBindVertexArray(0);
         defShader.detach();
+
+        gameObjects.forEach(go -> go.update(dt));
     }
 }

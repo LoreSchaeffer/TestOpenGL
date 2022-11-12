@@ -81,12 +81,12 @@ public class Window {
             case 0 -> {
                 currentScene = new LevelEditorScene();
                 currentScene.init();
-                LOGGER.info("Scene set to 0");
+                currentScene.start();
             }
             case 1 -> {
                 currentScene = new LevelScene();
                 currentScene.init();
-                LOGGER.info("Scene set to 1");
+                currentScene.start();
             }
             default -> {
                 LOGGER.error("Scene not found");
