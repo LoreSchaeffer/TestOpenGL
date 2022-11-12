@@ -45,7 +45,7 @@ import static org.lwjgl.opengl.GL20.*;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class RenderBatch {
+public class RenderBatch implements Comparable<RenderBatch> {
     // Vertex
     // ======
     // Pos              |   Color                       |   TexCoord        |   TexId
@@ -75,9 +75,11 @@ public class RenderBatch {
     private int vboId;
     private int maxBatchSize;
     private Shader shader;
+    private int zIndex;
 
-    public RenderBatch(int maxBatchSize) {
+    public RenderBatch(int maxBatchSize, int zIndex) {
         this.maxBatchSize = maxBatchSize;
+        this.zIndex = zIndex;
 
         shader = AssetPool.getShader(Shaders.DEFAULT);
 
@@ -197,6 +199,10 @@ public class RenderBatch {
         return textures.contains(texture);
     }
 
+    public int zIndex() {
+        return zIndex;
+    }
+
     private int[] generateIndices() {
         // 6 indices per quad (3 per triangle and 2 triangles per quad)
         int[] elements = new int[maxBatchSize * 6];
@@ -273,5 +279,10 @@ public class RenderBatch {
 
             offset += VERTEX_SIZE;
         }
+    }
+
+    @Override
+    public int compareTo(RenderBatch o) {
+        return Integer.compare(zIndex, o.zIndex);
     }
 }

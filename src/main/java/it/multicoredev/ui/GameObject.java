@@ -39,15 +39,25 @@ import static it.multicoredev.App.LOGGER;
 public class GameObject {
     private final String name;
     public Transform transform;
+    private int zIndex;
     private final List<Component> components = new ArrayList<>();
 
-    public GameObject(String name, Transform transform) {
+    public GameObject(String name, Transform transform, int zIndex) {
         this.name = name;
         this.transform = transform;
+        this.zIndex = zIndex;
+    }
+
+    public GameObject(String name, Transform transform) {
+        this(name, transform, 0);
+    }
+
+    public GameObject(String name, int zIndex) {
+        this(name, new Transform(), zIndex);
     }
 
     public GameObject(String name) {
-        this(name, new Transform());
+        this(name, 0);
     }
 
     public <T extends Component> T getComponent(Class<T> component) {
@@ -79,5 +89,13 @@ public class GameObject {
 
     public void start() {
         components.forEach(Component::start);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int zIndex() {
+        return zIndex;
     }
 }

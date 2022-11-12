@@ -3,6 +3,7 @@ package it.multicoredev.ui.scenes;
 import it.multicoredev.ui.Camera;
 import it.multicoredev.ui.GameObject;
 import it.multicoredev.ui.Transform;
+import it.multicoredev.ui.components.Sprite;
 import it.multicoredev.ui.components.SpriteRenderer;
 import it.multicoredev.ui.components.SpriteSheet;
 import it.multicoredev.utils.AssetPool;
@@ -44,6 +45,8 @@ import org.joml.Vector2f;
 public class LevelEditorScene extends Scene {
     private GameObject mario;
     private GameObject goomba;
+    private GameObject s1;
+    private GameObject s2;
 
     public LevelEditorScene() {
 
@@ -63,6 +66,14 @@ public class LevelEditorScene extends Scene {
         goomba = new GameObject("Obj 2", new Transform(new Vector2f(400, 100), new Vector2f(256, 256)));
         goomba.addComponent(new SpriteRenderer(sprites.getSprite(15)));
         addGameObject(goomba);
+
+        s1 = new GameObject("Obj 3", new Transform(new Vector2f(100, 400), new Vector2f(256, 256)), 1);
+        s1.addComponent(new SpriteRenderer(new Sprite(AssetPool.getTexture("assets/textures/red.png"))));
+        addGameObject(s1);
+
+        s2 = new GameObject("Obj 4", new Transform(new Vector2f(250, 400), new Vector2f(256, 256)), 2);
+        s2.addComponent(new SpriteRenderer(new Sprite(AssetPool.getTexture("assets/textures/green.png"))));
+        addGameObject(s2);
     }
 
     private int spriteIndex = 0;

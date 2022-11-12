@@ -163,6 +163,10 @@ public class Window {
         // bindings available for use.
         GL.createCapabilities();
 
+        // Alpha blending
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
         Window.setScene(0);
     }
 
