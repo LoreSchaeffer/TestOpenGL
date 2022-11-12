@@ -1,7 +1,6 @@
-package it.multicoredev.ui.components;
+package it.multicoredev.ui;
 
-import it.multicoredev.ui.Component;
-import org.joml.Vector4f;
+import org.joml.Vector2f;
 
 /**
  * BSD 3-Clause License
@@ -34,23 +33,20 @@ import org.joml.Vector4f;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class SpriteRenderer extends Component {
-    private Vector4f color;
+public class Transform {
+    public Vector2f position;
+    public Vector2f scale;
 
-    public SpriteRenderer(Vector4f color) {
-        this.color = color;
+    public Transform(Vector2f position, Vector2f scale) {
+        this.position = position;
+        this.scale = scale;
     }
 
-    @Override
-    public void start() {
+    public Transform(Vector2f position) {
+        this(position, new Vector2f(1, 1));
     }
 
-    @Override
-    public void update(float dt) {
-
-    }
-
-    public Vector4f getColor() {
-        return color;
+    public Transform() {
+        this(new Vector2f());
     }
 }

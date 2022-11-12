@@ -42,4 +42,8 @@ public abstract class Component {
     void setGameObject(GameObject gameObject) {
         this.gameObject = gameObject;
     }
+
+public GameObject gameObject() {
+        return gameObject;
+    }
 }

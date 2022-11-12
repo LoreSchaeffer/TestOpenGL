@@ -38,10 +38,16 @@ import static it.multicoredev.App.LOGGER;
  */
 public class GameObject {
     private final String name;
+    public Transform transform;
     private final List<Component> components = new ArrayList<>();
 
-    public GameObject(String name) {
+    public GameObject(String name, Transform transform) {
         this.name = name;
+        this.transform = transform;
+    }
+
+    public GameObject(String name) {
+        this(name, new Transform());
     }
 
     public <T extends Component> T getComponent(Class<T> component) {

@@ -56,7 +56,7 @@ public class Window {
 
     private static Window window = null;
 
-    private static Scene currentScene = null;
+    private Scene currentScene = null;
 
     // Callback documentation https://www.glfw.org/docs/3.3/input_guide.html
 
@@ -76,17 +76,21 @@ public class Window {
         return window;
     }
 
+    public static Scene getScene() {
+        return get().currentScene;
+    }
+
     public static void setScene(int scene) {
         switch (scene) {
             case 0 -> {
-                currentScene = new LevelEditorScene();
-                currentScene.init();
-                currentScene.start();
+                get().currentScene = new LevelEditorScene();
+                get().currentScene.init();
+                get().currentScene.start();
             }
             case 1 -> {
-                currentScene = new LevelScene();
-                currentScene.init();
-                currentScene.start();
+                get().currentScene = new LevelScene();
+                get().currentScene.init();
+                get().currentScene.start();
             }
             default -> {
                 LOGGER.error("Scene not found");

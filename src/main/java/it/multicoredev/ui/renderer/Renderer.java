@@ -1,7 +1,10 @@
-package it.multicoredev.ui.components;
+package it.multicoredev.ui.renderer;
 
-import it.multicoredev.ui.Component;
-import org.joml.Vector4f;
+import it.multicoredev.ui.GameObject;
+import it.multicoredev.ui.components.SpriteRenderer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * BSD 3-Clause License
@@ -34,23 +37,34 @@ import org.joml.Vector4f;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class SpriteRenderer extends Component {
-    private Vector4f color;
+public class Renderer {
+    private final int MAX_BATCH_SIZE = 1000;
+    private final List<RenderBatch> batches = new ArrayList<>();
 
-    public SpriteRenderer(Vector4f color) {
-        this.color = color;
+    public void add(GameObject obj) {
+        SpriteRenderer sprite = obj.getComponent(SpriteRenderer.class);
+        if (sprite != null) add(sprite);
     }
 
-    @Override
-    public void start() {
+    private void add(SpriteRenderer sprite) {
+        boolean added = false;
+        for (RenderBatch batch : batches) {
+            if (batch.hasRoom()) {
+                batch.addSprite(sprite);
+                added = true;
+                break;
+            }
+        }
+
+        if (!added) {
+            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE);
+            newBatch.start();
+            batches.add(newBatch);
+            newBatch.addSprite(sprite);
+        }
     }
 
-    @Override
-    public void update(float dt) {
-
-    }
-
-    public Vector4f getColor() {
-        return color;
+    public void render() {
+        batches.forEach(RenderBatch::render);
     }
 }

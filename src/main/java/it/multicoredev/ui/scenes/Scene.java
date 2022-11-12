@@ -2,6 +2,7 @@ package it.multicoredev.ui.scenes;
 
 import it.multicoredev.ui.Camera;
 import it.multicoredev.ui.GameObject;
+import it.multicoredev.ui.renderer.Renderer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,7 @@ import java.util.List;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 public abstract class Scene {
+    protected Renderer renderer = new Renderer();
     protected Camera camera;
     protected final List<GameObject> gameObjects = new ArrayList<>();
     private boolean isRunning = false;
@@ -49,7 +51,10 @@ public abstract class Scene {
     }
 
     public void start() {
-        gameObjects.forEach(GameObject::start);
+        gameObjects.forEach(obj -> {
+            obj.start();
+            renderer.add(obj);
+        });
     }
 
     public void addGameObject(GameObject obj) {
@@ -58,4 +63,8 @@ public abstract class Scene {
     }
 
     public abstract void update(float dt);
+
+    public Camera camera () {
+        return camera;
+    }
 }

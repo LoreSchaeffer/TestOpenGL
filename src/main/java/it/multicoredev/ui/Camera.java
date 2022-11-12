@@ -47,6 +47,10 @@ public class Camera {
         adjustProjection();
     }
 
+    public Camera() {
+        this(new Vector2f(0, 0));
+    }
+
     public void adjustProjection() {
         projectionMatrix.identity();
         projectionMatrix.ortho(0.0f, 32.0f * 40.0f, 0.0f, 32.0f * 21.0f, 0.0f, 100.0f);
