@@ -2,6 +2,8 @@ package it.multicoredev.ui;
 
 import org.joml.Vector2f;
 
+import java.util.Objects;
+
 /**
  * BSD 3-Clause License
  * <p>
@@ -48,5 +50,27 @@ public class Transform {
 
     public Transform() {
         this(new Vector2f());
+    }
+
+    public Transform copy() {
+        return new Transform(new Vector2f(position), new Vector2f(scale));
+    }
+
+    public void copyTo(Transform to) {
+        to.position.set(position);
+        to.scale.set(scale);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Transform transform = (Transform) o;
+        return Objects.equals(position, transform.position) && Objects.equals(scale, transform.scale);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(position, scale);
     }
 }

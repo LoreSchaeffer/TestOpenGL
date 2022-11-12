@@ -42,6 +42,8 @@ import org.joml.Vector2f;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 public class LevelEditorScene extends Scene {
+    private GameObject mario;
+    private GameObject goomba;
 
     public LevelEditorScene() {
 
@@ -54,19 +56,37 @@ public class LevelEditorScene extends Scene {
 
         SpriteSheet sprites = AssetPool.getSpriteSheet(SpriteSheets.SPRITESHEET);
 
-        GameObject obj1 = new GameObject("Obj 1", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)));
-        obj1.addComponent(new SpriteRenderer(sprites.getSprite(0)));
-        addGameObject(obj1);
+        mario = new GameObject("Obj 1", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)));
+        mario.addComponent(new SpriteRenderer(sprites.getSprite(0)));
+        addGameObject(mario);
 
-        GameObject obj2 = new GameObject("Obj 2", new Transform(new Vector2f(400, 100), new Vector2f(256, 256)));
-        obj2.addComponent(new SpriteRenderer(sprites.getSprite(15)));
-        addGameObject(obj2);
+        goomba = new GameObject("Obj 2", new Transform(new Vector2f(400, 100), new Vector2f(256, 256)));
+        goomba.addComponent(new SpriteRenderer(sprites.getSprite(15)));
+        addGameObject(goomba);
     }
+
+    private int spriteIndex = 0;
+    private float spriteFlipTime = 0.2f;
+    private float spriteFlipTimeLeft = 0.0f;
 
     @Override
     public void update(float dt) {
         //LOGGER.info("FPS: " + (1f / dt));
+
+        spriteFlipTimeLeft -= dt;
+        if (spriteFlipTimeLeft <= 0) {
+            spriteFlipTimeLeft = spriteFlipTime;
+            spriteIndex++;
+            if (spriteIndex > 4) {
+                spriteIndex = 0;
+            }
+
+            mario.getComponent(SpriteRenderer.class).setSprite(AssetPool.getSpriteSheet(SpriteSheets.SPRITESHEET).getSprite(spriteIndex));
+        }
+
+
         gameObjects.forEach(go -> go.update(dt));
+
         renderer.render();
     }
 
