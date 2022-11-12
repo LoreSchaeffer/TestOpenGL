@@ -1,11 +1,14 @@
 package it.multicoredev.utils;
 
+import it.multicoredev.ui.components.SpriteSheet;
 import it.multicoredev.ui.renderer.Shader;
 import it.multicoredev.ui.renderer.Texture;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+
+import static it.multicoredev.App.LOGGER;
 
 /**
  * BSD 3-Clause License
@@ -41,6 +44,7 @@ import java.util.Map;
 public class AssetPool {
     private final static Map<String, Shader> shaders = new HashMap<>();
     private final static Map<String, Texture> textures = new HashMap<>();
+    private final static Map<String, SpriteSheet> spriteSheets = new HashMap<>();
 
     public static Shader getShader(String filePath) {
         File file = new File(filePath);
@@ -65,4 +69,21 @@ public class AssetPool {
         }
     }
 
+    public static void addSpriteSheet(String filePath, SpriteSheet spriteSheet) {
+        File file = new File(filePath);
+
+        if (!spriteSheets.containsKey(file.getPath())) {
+            spriteSheets.put(file.getPath(), spriteSheet);
+        }
+    }
+
+    public static SpriteSheet getSpriteSheet(String filePath) {
+        File file = new File(filePath);
+        if (spriteSheets.containsKey(file.getPath())) {
+            return spriteSheets.get(file.getPath());
+        } else {
+            LOGGER.error("SpriteSheet not found: " + file.getPath());
+            return null;
+        }
+    }
 }

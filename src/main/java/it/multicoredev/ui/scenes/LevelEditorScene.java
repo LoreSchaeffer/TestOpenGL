@@ -4,8 +4,10 @@ import it.multicoredev.ui.Camera;
 import it.multicoredev.ui.GameObject;
 import it.multicoredev.ui.Transform;
 import it.multicoredev.ui.components.SpriteRenderer;
+import it.multicoredev.ui.components.SpriteSheet;
 import it.multicoredev.utils.AssetPool;
 import it.multicoredev.utils.Shaders;
+import it.multicoredev.utils.SpriteSheets;
 import org.joml.Vector2f;
 
 /**
@@ -48,16 +50,17 @@ public class LevelEditorScene extends Scene {
     @Override
     public void init() {
         camera = new Camera();
+        loadResources();
+
+        SpriteSheet sprites = AssetPool.getSpriteSheet(SpriteSheets.SPRITESHEET);
 
         GameObject obj1 = new GameObject("Obj 1", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)));
-        obj1.addComponent(new SpriteRenderer(AssetPool.getTexture("assets/textures/mario.png")));
+        obj1.addComponent(new SpriteRenderer(sprites.getSprite(0)));
         addGameObject(obj1);
 
         GameObject obj2 = new GameObject("Obj 2", new Transform(new Vector2f(400, 100), new Vector2f(256, 256)));
-        obj2.addComponent(new SpriteRenderer(AssetPool.getTexture("assets/textures/goomba.png")));
+        obj2.addComponent(new SpriteRenderer(sprites.getSprite(15)));
         addGameObject(obj2);
-
-        loadResources();
     }
 
     @Override
@@ -69,5 +72,6 @@ public class LevelEditorScene extends Scene {
 
     private void loadResources() {
         AssetPool.getShader(Shaders.DEFAULT);
+        AssetPool.addSpriteSheet(SpriteSheets.SPRITESHEET, new SpriteSheet(AssetPool.getTexture(SpriteSheets.SPRITESHEET), 16, 16, 26, 0));
     }
 }

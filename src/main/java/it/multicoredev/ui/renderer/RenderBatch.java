@@ -178,6 +178,14 @@ public class RenderBatch {
         return hasRoom;
     }
 
+    public boolean hasTextureRoom() {
+        return textures.size() < 16;
+    }
+
+    public boolean hasTexture(Texture texture) {
+        return textures.contains(texture);
+    }
+
     private int[] generateIndices() {
         // 6 indices per quad (3 per triangle and 2 triangles per quad)
         int[] elements = new int[maxBatchSize * 6];

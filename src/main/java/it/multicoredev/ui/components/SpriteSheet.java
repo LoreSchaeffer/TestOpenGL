@@ -1,7 +1,7 @@
-package it.multicoredev.ui.renderer;
+package it.multicoredev.ui.components;
 
-import it.multicoredev.ui.GameObject;
-import it.multicoredev.ui.components.SpriteRenderer;
+import it.multicoredev.ui.renderer.Texture;
+import org.joml.Vector2f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,37 +37,40 @@ import java.util.List;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class Renderer {
-    private final int MAX_BATCH_SIZE = 1000;
-    private final List<RenderBatch> batches = new ArrayList<>();
+public class SpriteSheet {
+    private final Texture texture;
+    private final List<Sprite> sprites = new ArrayList<>();
 
-    public void add(GameObject obj) {
-        SpriteRenderer sprite = obj.getComponent(SpriteRenderer.class);
-        if (sprite != null) add(sprite);
-    }
+    public SpriteSheet(Texture texture, int spriteWidth, int spriteHeight, int numSprites, int spacing) {
+        this.texture = texture;
 
-    private void add(SpriteRenderer sprite) {
-        boolean added = false;
-        for (RenderBatch batch : batches) {
-            if (batch.hasRoom()) {
-                Texture texture = sprite.getTexture();
-                if (texture == null || (batch.hasTexture(texture) || batch.hasTextureRoom())) {
-                    batch.addSprite(sprite);
-                    added = true;
-                    break;
-                }
+        int currentX = 0;
+        int currentY = texture.getHeight() - spriteHeight;
+
+        for (int i = 0; i < numSprites; i++) {
+            float topY = (currentY + spriteHeight) / (float) texture.getHeight();
+            float rightX = (currentX + spriteWidth) / (float) texture.getWidth();
+            float leftX = currentX / (float) texture.getWidth();
+            float bottomY = currentY / (float) texture.getHeight();
+
+            Vector2f[] texCooords = new Vector2f[]{
+                    new Vector2f(rightX, topY),
+                    new Vector2f(rightX, bottomY),
+                    new Vector2f(leftX, bottomY),
+                    new Vector2f(leftX, topY)
+            };
+
+            sprites.add(new Sprite(texture, texCooords));
+
+            currentX += spriteWidth + spacing;
+            if (currentX >= texture.getWidth()) {
+                currentX = 0;
+                currentY -= spriteHeight + spacing;
             }
         }
-
-        if (!added) {
-            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE);
-            newBatch.start();
-            batches.add(newBatch);
-            newBatch.addSprite(sprite);
-        }
     }
 
-    public void render() {
-        batches.forEach(RenderBatch::render);
+    public Sprite getSprite(int index) {
+        return sprites.get(index);
     }
 }
