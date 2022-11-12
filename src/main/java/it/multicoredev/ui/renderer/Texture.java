@@ -48,8 +48,8 @@ public class Texture {
 
     private int id;
 
-    public Texture(String filePath) {
-        this.file = new File(filePath);
+    public Texture(File file) {
+        this.file = file;
 
         // Generate texture on GPU
         id = glGenTextures();

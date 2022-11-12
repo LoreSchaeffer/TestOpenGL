@@ -2,6 +2,8 @@ package it.multicoredev.ui.renderer;
 
 import it.multicoredev.ui.Window;
 import it.multicoredev.ui.components.SpriteRenderer;
+import it.multicoredev.utils.AssetPool;
+import it.multicoredev.utils.Shaders;
 import org.joml.Vector4f;
 
 import static org.lwjgl.opengl.ARBVertexArrayObject.glBindVertexArray;
@@ -64,8 +66,7 @@ public class RenderBatch {
     public RenderBatch(int maxBatchSize) {
         this.maxBatchSize = maxBatchSize;
 
-        shader = new Shader("assets/shaders/default.glsl");
-        shader.compileAndLink();
+        shader = AssetPool.getShader(Shaders.DEFAULT);
 
         sprites = new SpriteRenderer[maxBatchSize];
         vertices = new float[maxBatchSize * VERTEX_SIZE * 4]; // 4 vertices per quad

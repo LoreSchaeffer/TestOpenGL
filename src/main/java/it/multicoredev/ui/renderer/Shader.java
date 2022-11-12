@@ -51,11 +51,11 @@ public class Shader {
     private String vertexSrc;
     private String fragmentSrc;
 
-    public Shader(String filePath) {
-        this.file = new File(filePath);
+    public Shader(File file) {
+        this.file = file;
 
         try {
-            String src = new String(Files.readAllBytes(file.toPath()));
+            String src = new String(Files.readAllBytes(this.file.toPath()));
             String[] splitSrc = src.split("(#type)( )+([a-zA-Z]+)");
 
             int idx = src.indexOf("#type") + 6;
@@ -74,7 +74,7 @@ public class Shader {
             else if (secondPattern.equals("fragment")) fragmentSrc = splitSrc[2];
             else throw new RuntimeException("Unexpected token '" + secondPattern + "'");
         } catch (IOException e) {
-            LOGGER.error("Could not open file for shaders: '" + file.getName() + "'", e);
+            LOGGER.error("Could not open file for shaders: '" + this.file.getName() + "'", e);
             System.exit(-1);
         }
     }

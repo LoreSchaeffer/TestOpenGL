@@ -1,15 +1,11 @@
-package it.multicoredev.ui.scenes;
+package it.multicoredev.utils;
 
-import it.multicoredev.ui.Camera;
-import it.multicoredev.ui.GameObject;
-import it.multicoredev.ui.Transform;
-import it.multicoredev.ui.components.SpriteRenderer;
-import it.multicoredev.utils.AssetPool;
-import it.multicoredev.utils.Shaders;
-import org.joml.Vector2f;
-import org.joml.Vector4f;
+import it.multicoredev.ui.renderer.Shader;
+import it.multicoredev.ui.renderer.Texture;
 
-import static it.multicoredev.App.LOGGER;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * BSD 3-Clause License
@@ -42,45 +38,31 @@ import static it.multicoredev.App.LOGGER;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class LevelEditorScene extends Scene {
+public class AssetPool {
+    private final static Map<String, Shader> shaders = new HashMap<>();
+    private final static Map<String, Texture> textures = new HashMap<>();
 
-    public LevelEditorScene() {
-
-    }
-
-    @Override
-    public void init() {
-        camera = new Camera();
-
-        int xOffset = 10;
-        int yOffset = 10;
-
-        float totalWidth = (float) (600 - xOffset * 2);
-        float totalHeight = (float) (300 - yOffset * 2);
-        float xSize = totalWidth / 100f;
-        float ySize = totalHeight / 100f;
-
-        for (int x = 0; x < 100; x++) {
-            for (int y = 0; y < 100; y++) {
-                float xPos = (float) xOffset + x * xSize;
-                float yPos = (float) yOffset + y * ySize;
-
-                GameObject obj = new GameObject("Tile " + x + " " + y, new Transform(new Vector2f(xPos, yPos), new Vector2f(xSize, ySize)));
-                obj.addComponent(new SpriteRenderer(new Vector4f(xPos / totalWidth, yPos / totalHeight, 1, 1)));
-                addGameObject(obj);
-            }
+    public static Shader getShader(String filePath) {
+        File file = new File(filePath);
+        if (shaders.containsKey(file.getPath())) {
+            return shaders.get(file.getPath());
+        } else {
+            Shader shader = new Shader(file);
+            shader.compileAndLink();
+            shaders.put(file.getPath(), shader);
+            return shader;
         }
-
-        loadResources();
     }
 
-    @Override
-    public void update(float dt) {
-        gameObjects.forEach(go -> go.update(dt));
-        renderer.render();
+    public static Texture getTexture(String filePath) {
+        File file = new File(filePath);
+        if (textures.containsKey(file.getPath())) {
+            return textures.get(file.getPath());
+        } else {
+            Texture texture = new Texture(file);
+            textures.put(file.getPath(), texture);
+            return texture;
+        }
     }
 
-    private void loadResources() {
-        AssetPool.getShader(Shaders.DEFAULT);
-    }
 }
