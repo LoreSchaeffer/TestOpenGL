@@ -1,5 +1,6 @@
 package it.multicoredev.ui.scenes;
 
+import imgui.ImGui;
 import it.multicoredev.ui.Camera;
 import it.multicoredev.ui.GameObject;
 import it.multicoredev.ui.Transform;
@@ -10,6 +11,7 @@ import it.multicoredev.utils.AssetPool;
 import it.multicoredev.utils.Shaders;
 import it.multicoredev.utils.SpriteSheets;
 import org.joml.Vector2f;
+import org.joml.Vector4f;
 
 /**
  * BSD 3-Clause License
@@ -68,12 +70,14 @@ public class LevelEditorScene extends Scene {
         addGameObject(goomba);
 
         s1 = new GameObject("Obj 3", new Transform(new Vector2f(100, 400), new Vector2f(256, 256)), 1);
-        s1.addComponent(new SpriteRenderer(new Sprite(AssetPool.getTexture("assets/textures/red.png"))));
+        s1.addComponent(new SpriteRenderer(new Vector4f(1, 0, 0, 0.6f)));
         addGameObject(s1);
 
         s2 = new GameObject("Obj 4", new Transform(new Vector2f(250, 400), new Vector2f(256, 256)), 2);
-        s2.addComponent(new SpriteRenderer(new Sprite(AssetPool.getTexture("assets/textures/green.png"))));
+        s2.addComponent(new SpriteRenderer(new Vector4f(0, 1, 0, 0.6f)));
         addGameObject(s2);
+
+        activeGameObject = s2;
     }
 
     private int spriteIndex = 0;
@@ -99,6 +103,11 @@ public class LevelEditorScene extends Scene {
         gameObjects.forEach(go -> go.update(dt));
 
         renderer.render();
+    }
+
+    @Override
+    public void imgui() {
+
     }
 
     private void loadResources() {

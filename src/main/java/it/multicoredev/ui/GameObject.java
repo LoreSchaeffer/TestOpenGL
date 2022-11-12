@@ -98,4 +98,8 @@ public class GameObject {
     public int zIndex() {
         return zIndex;
     }
+
+    public void imgui() {
+        components.forEach(Component::imgui);
+    }
 }

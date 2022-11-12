@@ -1,5 +1,6 @@
 package it.multicoredev.ui.components;
 
+import imgui.ImGui;
 import it.multicoredev.ui.Component;
 import it.multicoredev.ui.Transform;
 import it.multicoredev.ui.renderer.Texture;
@@ -64,6 +65,15 @@ public class SpriteRenderer extends Component {
     public void update(float dt) {
         if (!lastTransform.equals(gameObject.transform)) {
             gameObject.transform.copyTo(lastTransform);
+            isDirty = true;
+        }
+    }
+
+    @Override
+    public void imgui() {
+        float[] imColor = {color.x, color.y, color.z, color.w};
+        if (ImGui.colorEdit4("Color Picker", imColor)) {
+            color.set(imColor[0], imColor[1], imColor[2], imColor[3]);
             isDirty = true;
         }
     }

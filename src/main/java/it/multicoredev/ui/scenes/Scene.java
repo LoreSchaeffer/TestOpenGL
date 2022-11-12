@@ -1,5 +1,6 @@
 package it.multicoredev.ui.scenes;
 
+import imgui.ImGui;
 import it.multicoredev.ui.Camera;
 import it.multicoredev.ui.GameObject;
 import it.multicoredev.ui.renderer.Renderer;
@@ -42,6 +43,7 @@ public abstract class Scene {
     protected Renderer renderer = new Renderer();
     protected Camera camera;
     protected final List<GameObject> gameObjects = new ArrayList<>();
+    protected GameObject activeGameObject = null;
     private boolean isRunning = false;
 
     public Scene() {
@@ -66,5 +68,19 @@ public abstract class Scene {
 
     public Camera camera () {
         return camera;
+    }
+
+    public void sceneImgui() {
+        if (activeGameObject != null) {
+            ImGui.begin("Inspector");
+            activeGameObject.imgui();
+            ImGui.end();
+        }
+
+        imgui();
+    }
+
+    public void imgui() {
+
     }
 }

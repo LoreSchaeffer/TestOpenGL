@@ -1,9 +1,5 @@
 package it.multicoredev.ui.scenes;
 
-import it.multicoredev.ui.Window;
-
-import static it.multicoredev.App.LOGGER;
-
 /**
  * BSD 3-Clause License
  * <p>
@@ -38,8 +34,6 @@ import static it.multicoredev.App.LOGGER;
 public class LevelScene extends Scene {
 
     public LevelScene() {
-        LOGGER.info("LevelScene created");
-        Window.get().setBackgroundColor(1f, 1f, 1f, 1f);
     }
 
     @Override

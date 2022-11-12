@@ -51,7 +51,8 @@ public class Window {
     private int height;
     private String title;
     private long windowId;
-    private float[] windowColor = new float[]{0.1f, 0.1f, 0.1f, 0.1f};
+    public float[] windowColor = new float[]{0.1f, 0.1f, 0.1f, 0.1f};
+    private ImGuiLayer imguiLayer;
 
     private static Window window = null;
 
@@ -73,6 +74,22 @@ public class Window {
     public static Window get() {
         if (window == null) throw new IllegalStateException("Window not initialized");
         return window;
+    }
+
+    public static int getWidth() {
+        return get().width;
+    }
+
+    public static void setWidth(int width) {
+        get().width = width;
+    }
+
+    public static int getHeight() {
+        return get().height;
+    }
+
+    public static void setHeight(int height) {
+        get().height = height;
     }
 
     public static Scene getScene() {
@@ -113,17 +130,6 @@ public class Window {
         glfwSetErrorCallback(null).free();
     }
 
-    public void setBackgroundColor(float r, float g, float b, float a) {
-        windowColor[0] = r;
-        windowColor[1] = g;
-        windowColor[2] = b;
-        windowColor[3] = a;
-    }
-
-    public float[] getBackgroundColor() {
-        return windowColor;
-    }
-
     private void init() {
         //Setup an error callback
         GLFWErrorCallback.createPrint(System.err).set();
@@ -148,6 +154,12 @@ public class Window {
         // Key callbacks
         glfwSetKeyCallback(windowId, KeyListener::keyCallback);
 
+        // Window callbacks
+        glfwSetWindowSizeCallback(windowId, (w, newWidth, newHeight) -> {
+            width = newWidth;
+            height = newHeight;
+        });
+
         // Make the OpenGL context current
         glfwMakeContextCurrent(windowId);
         // Enable v-sync
@@ -167,6 +179,9 @@ public class Window {
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
+        imguiLayer = new ImGuiLayer(windowId);
+        imguiLayer.init();
+
         Window.setScene(0);
     }
 
@@ -184,7 +199,7 @@ public class Window {
 
             if (dt >= 0) currentScene.update(dt);
 
-            //LOGGER.info("FPS: " + (1.0f / dt));
+            imguiLayer.update(dt, currentScene);
 
             glfwSwapBuffers(windowId);
 

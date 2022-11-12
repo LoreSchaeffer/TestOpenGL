@@ -32,5 +32,8 @@ package it.multicoredev.utils;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 public class SpriteSheets {
-    public static final String SPRITESHEET = "assets/textures/spritesheet.png";
+    public static final String SPRITESHEET = "assets/textures/spritesheets/spritesheet.png";
+    public static final String DECORATIONS_AND_BLOCKS = "assets/textures/spritesheets/decorations_and_blocks.png";
+    public static final String ICONS = "assets/textures/spritesheets/icons.png";
+    public static final String PIPES = "assets/textures/spritesheets/pipes.png";
 }
