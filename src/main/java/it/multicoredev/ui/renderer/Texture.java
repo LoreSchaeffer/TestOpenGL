@@ -9,8 +9,7 @@ import java.nio.IntBuffer;
 import static it.multicoredev.App.LOGGER;
 import static org.lwjgl.opengl.ARBInternalformatQuery2.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11C.*;
-import static org.lwjgl.stb.STBImage.stbi_image_free;
-import static org.lwjgl.stb.STBImage.stbi_load;
+import static org.lwjgl.stb.STBImage.*;
 
 /**
  * BSD 3-Clause License
@@ -69,6 +68,7 @@ public class Texture {
         IntBuffer height = BufferUtils.createIntBuffer(1);
         IntBuffer channels = BufferUtils.createIntBuffer(1);
 
+        stbi_set_flip_vertically_on_load(true);
         ByteBuffer image = stbi_load(file.getPath(), width, height, channels, 0);
 
         if (image != null) {

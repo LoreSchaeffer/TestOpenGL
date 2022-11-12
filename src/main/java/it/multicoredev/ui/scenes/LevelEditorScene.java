@@ -7,9 +7,6 @@ import it.multicoredev.ui.components.SpriteRenderer;
 import it.multicoredev.utils.AssetPool;
 import it.multicoredev.utils.Shaders;
 import org.joml.Vector2f;
-import org.joml.Vector4f;
-
-import static it.multicoredev.App.LOGGER;
 
 /**
  * BSD 3-Clause License
@@ -52,30 +49,20 @@ public class LevelEditorScene extends Scene {
     public void init() {
         camera = new Camera();
 
-        int xOffset = 10;
-        int yOffset = 10;
+        GameObject obj1 = new GameObject("Obj 1", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)));
+        obj1.addComponent(new SpriteRenderer(AssetPool.getTexture("assets/textures/mario.png")));
+        addGameObject(obj1);
 
-        float totalWidth = (float) (600 - xOffset * 2);
-        float totalHeight = (float) (300 - yOffset * 2);
-        float xSize = totalWidth / 100f;
-        float ySize = totalHeight / 100f;
-
-        for (int x = 0; x < 100; x++) {
-            for (int y = 0; y < 100; y++) {
-                float xPos = (float) xOffset + x * xSize;
-                float yPos = (float) yOffset + y * ySize;
-
-                GameObject obj = new GameObject("Tile " + x + " " + y, new Transform(new Vector2f(xPos, yPos), new Vector2f(xSize, ySize)));
-                obj.addComponent(new SpriteRenderer(new Vector4f(xPos / totalWidth, yPos / totalHeight, 1, 1)));
-                addGameObject(obj);
-            }
-        }
+        GameObject obj2 = new GameObject("Obj 2", new Transform(new Vector2f(400, 100), new Vector2f(256, 256)));
+        obj2.addComponent(new SpriteRenderer(AssetPool.getTexture("assets/textures/goomba.png")));
+        addGameObject(obj2);
 
         loadResources();
     }
 
     @Override
     public void update(float dt) {
+        //LOGGER.info("FPS: " + (1f / dt));
         gameObjects.forEach(go -> go.update(dt));
         renderer.render();
     }
