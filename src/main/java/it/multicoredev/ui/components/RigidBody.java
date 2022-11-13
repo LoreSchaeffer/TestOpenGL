@@ -1,6 +1,5 @@
 package it.multicoredev.ui.components;
 
-import it.multicoredev.ui.Component;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 

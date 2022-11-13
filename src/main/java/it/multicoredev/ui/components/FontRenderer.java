@@ -1,7 +1,5 @@
 package it.multicoredev.ui.components;
 
-import it.multicoredev.ui.Component;
-
 /**
  * BSD 3-Clause License
  * <p>

@@ -4,6 +4,7 @@ import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
+import it.multicoredev.ui.components.Component;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -44,6 +45,9 @@ import static it.multicoredev.App.LOGGER;
  */
 @JsonAdapter(GameObject.JsonAdapter.class)
 public class GameObject {
+    private static int ID_COUNTER = 0;
+    private int uid = -1;
+
     private final String name;
     public Transform transform;
     @SerializedName("z_index")
@@ -54,6 +58,8 @@ public class GameObject {
         this.name = name;
         this.transform = transform;
         this.zIndex = zIndex;
+
+        this.uid = ID_COUNTER++;
     }
 
     public GameObject(String name, Transform transform) {
@@ -66,6 +72,10 @@ public class GameObject {
 
     public GameObject(String name) {
         this(name, 0);
+    }
+
+    public List<Component> getComponents() {
+        return components;
     }
 
     public <T extends Component> T getComponent(Class<T> component) {
@@ -87,6 +97,7 @@ public class GameObject {
     }
 
     public void addComponent(Component component) {
+        component.generateId();
         components.add(component);
         component.setGameObject(this);
     }
@@ -109,6 +120,14 @@ public class GameObject {
 
     public void imgui() {
         components.forEach(Component::imgui);
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public static void init(int maxId) {
+        ID_COUNTER = maxId;
     }
 
     public static class JsonAdapter implements JsonDeserializer<GameObject> {

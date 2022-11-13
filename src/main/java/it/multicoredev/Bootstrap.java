@@ -1,7 +1,5 @@
 package it.multicoredev;
 
-import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
-
 /**
  * BSD 3-Clause License
  * <p>
@@ -35,7 +33,6 @@ import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
  */
 public class Bootstrap {
     public static void main(String[] args) {
-        SysOutOverSLF4J.sendSystemOutAndErrToSLF4J();
         new App().run();
     }
 }

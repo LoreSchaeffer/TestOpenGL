@@ -3,6 +3,9 @@ package it.multicoredev.ui.scenes;
 import imgui.ImGui;
 import imgui.ImVec2;
 import it.multicoredev.ui.Camera;
+import it.multicoredev.ui.GameObject;
+import it.multicoredev.ui.Prefabs;
+import it.multicoredev.ui.components.MouseControls;
 import it.multicoredev.ui.components.Sprite;
 import it.multicoredev.ui.components.SpriteRenderer;
 import it.multicoredev.ui.components.SpriteSheet;
@@ -46,6 +49,7 @@ import static it.multicoredev.App.LOGGER;
  */
 public class LevelEditorScene extends Scene {
     private SpriteSheet decorationsAndBlocks;
+    MouseControls mouseControls = new MouseControls();
 
     public LevelEditorScene() {
 
@@ -87,6 +91,8 @@ public class LevelEditorScene extends Scene {
     public void update(float dt) {
         //LOGGER.info("FPS: " + (1f / dt));
 
+        mouseControls.update(dt);
+
         spriteFlipTimeLeft -= dt;
         if (spriteFlipTimeLeft <= 0) {
             spriteFlipTimeLeft = spriteFlipTime;
@@ -127,7 +133,10 @@ public class LevelEditorScene extends Scene {
 
             ImGui.pushID(i);
             if (ImGui.imageButton(id, spriteWidth, spriteHeight, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
-                LOGGER.info("Button " + i + " clicked");
+                GameObject obj = Prefabs.generateSpriteObject(sprite, spriteWidth, spriteHeight, 0);
+
+                // Attach object to mouse cursor
+                mouseControls.pickUpObject(obj);
             }
             ImGui.popID();
 

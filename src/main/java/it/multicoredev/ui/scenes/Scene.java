@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import imgui.ImGui;
 import it.multicoredev.ui.Camera;
 import it.multicoredev.ui.GameObject;
+import it.multicoredev.ui.components.Component;
 import it.multicoredev.ui.renderer.Renderer;
 
 import java.io.*;
@@ -108,8 +109,22 @@ public abstract class Scene {
     public void load(String path) {
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8)) {
             gameObjects.clear();
+            int maxGameObjectId = -1;
+            int maxComponentId = -1;
+
             List<GameObject> objects = GSON.fromJson(reader, new TypeToken<List<GameObject>>() {}.getType());
-            objects.forEach(this::addGameObject);
+            for (GameObject obj : objects) {
+                addGameObject(obj);
+
+                if (obj.getUid() > maxGameObjectId) maxGameObjectId = obj.getUid();
+
+                for (Component component : obj.getComponents()) {
+                    if (component.getUid() > maxComponentId) maxComponentId = component.getUid();
+                }
+            }
+
+            GameObject.init(maxGameObjectId + 1);
+            Component.init(maxComponentId + 1);
             loadedLevel = true;
         } catch (Exception e) {
             LOGGER.warn("Cannot load scene");

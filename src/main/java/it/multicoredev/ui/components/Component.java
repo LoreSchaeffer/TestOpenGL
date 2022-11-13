@@ -1,14 +1,17 @@
-package it.multicoredev.ui;
+package it.multicoredev.ui.components;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import imgui.ImGui;
+import it.multicoredev.ui.GameObject;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+
+import static it.multicoredev.App.LOGGER;
 
 /**
  * BSD 3-Clause License
@@ -43,6 +46,9 @@ import java.lang.reflect.Type;
  */
 @JsonAdapter(Component.JsonAdapter.class)
 public abstract class Component {
+    private static int IN_COUNTER = 0;
+    private int uid = -1;
+
     protected transient GameObject gameObject = null;
 
     public void start() {
@@ -53,7 +59,7 @@ public abstract class Component {
 
     }
 
-    void setGameObject(GameObject gameObject) {
+    public void setGameObject(GameObject gameObject) {
         this.gameObject = gameObject;
     }
 
@@ -110,8 +116,22 @@ public abstract class Component {
                 if (isPrivate) field.setAccessible(false);
             }
         } catch (IllegalAccessException e) {
-
+            LOGGER.error(e.getMessage(), e);
         }
+    }
+
+    public void generateId() {
+        if (uid == -1) {
+            uid = IN_COUNTER++;
+        }
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public static void init(int maxId) {
+        IN_COUNTER = maxId;
     }
 
     public static class JsonAdapter implements JsonDeserializer<Component>, JsonSerializer<Component> {
