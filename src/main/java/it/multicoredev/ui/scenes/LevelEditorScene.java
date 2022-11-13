@@ -1,17 +1,17 @@
 package it.multicoredev.ui.scenes;
 
 import imgui.ImGui;
+import imgui.ImVec2;
 import it.multicoredev.ui.Camera;
-import it.multicoredev.ui.GameObject;
-import it.multicoredev.ui.Transform;
 import it.multicoredev.ui.components.Sprite;
 import it.multicoredev.ui.components.SpriteRenderer;
 import it.multicoredev.ui.components.SpriteSheet;
+import it.multicoredev.ui.registries.Scenes;
+import it.multicoredev.ui.registries.SpriteSheets;
 import it.multicoredev.utils.AssetPool;
-import it.multicoredev.utils.Shaders;
-import it.multicoredev.utils.SpriteSheets;
 import org.joml.Vector2f;
-import org.joml.Vector4f;
+
+import static it.multicoredev.App.LOGGER;
 
 /**
  * BSD 3-Clause License
@@ -45,10 +45,7 @@ import org.joml.Vector4f;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 public class LevelEditorScene extends Scene {
-    private GameObject mario;
-    private GameObject goomba;
-    private GameObject s1;
-    private GameObject s2;
+    private SpriteSheet decorationsAndBlocks;
 
     public LevelEditorScene() {
 
@@ -57,30 +54,32 @@ public class LevelEditorScene extends Scene {
     @Override
     public void init() {
         camera = new Camera();
-        loadResources();
 
-        SpriteSheet sprites = AssetPool.getSpriteSheet(SpriteSheets.SPRITESHEET);
+        decorationsAndBlocks = AssetPool.getSpriteSheet(SpriteSheets.DECORATIONS_AND_BLOCKS);
 
-        mario = new GameObject("Obj 1", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)));
-        mario.addComponent(new SpriteRenderer(sprites.getSprite(0)));
-        addGameObject(mario);
+        if (loadedLevel) {
+            activeGameObject = getGameObject("goomba");
+            return;
+        }
 
-        goomba = new GameObject("Obj 2", new Transform(new Vector2f(400, 100), new Vector2f(256, 256)));
-        goomba.addComponent(new SpriteRenderer(sprites.getSprite(15)));
-        addGameObject(goomba);
-
-        s1 = new GameObject("Obj 3", new Transform(new Vector2f(100, 400), new Vector2f(256, 256)), 1);
-        s1.addComponent(new SpriteRenderer(new Vector4f(1, 0, 0, 0.6f)));
-        addGameObject(s1);
-
-        s2 = new GameObject("Obj 4", new Transform(new Vector2f(250, 400), new Vector2f(256, 256)), 2);
-        s2.addComponent(new SpriteRenderer(new Vector4f(0, 1, 0, 0.6f)));
-        addGameObject(s2);
-
-        activeGameObject = s2;
+//        GameObject mario = new GameObject("mario", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)));
+//        mario.addComponent(new SpriteRenderer(decorationsAndBlocks.getSprite(9)));
+//        addGameObject(mario);
+//
+//        GameObject goomba = new GameObject("goomba", new Transform(new Vector2f(400, 100), new Vector2f(256, 256)));
+//        goomba.addComponent(new SpriteRenderer(decorationsAndBlocks.getSprite(15)));
+//        addGameObject(goomba);
+//
+//        GameObject s1 = new GameObject("sqr_1", new Transform(new Vector2f(100, 400), new Vector2f(256, 256)), 1);
+//        s1.addComponent(new SpriteRenderer(new Vector4f(1, 0, 0, 0.6f)));
+//        addGameObject(s1);
+//
+//        GameObject s2 = new GameObject("sqr_2", new Transform(new Vector2f(250, 400), new Vector2f(256, 256)), 2);
+//        s2.addComponent(new SpriteRenderer(new Vector4f(0, 1, 0, 0.6f)));
+//        addGameObject(s2);
     }
 
-    private int spriteIndex = 0;
+    private int spriteIndex = 9;
     private float spriteFlipTime = 0.2f;
     private float spriteFlipTimeLeft = 0.0f;
 
@@ -92,26 +91,54 @@ public class LevelEditorScene extends Scene {
         if (spriteFlipTimeLeft <= 0) {
             spriteFlipTimeLeft = spriteFlipTime;
             spriteIndex++;
-            if (spriteIndex > 4) {
-                spriteIndex = 0;
+            if (spriteIndex > 13) {
+                spriteIndex = 9;
             }
 
-            mario.getComponent(SpriteRenderer.class).setSprite(AssetPool.getSpriteSheet(SpriteSheets.SPRITESHEET).getSprite(spriteIndex));
+            getGameObject("mario").getComponent(SpriteRenderer.class).setSprite(AssetPool.getSpriteSheet(SpriteSheets.SPRITESHEET).getSprite(spriteIndex));
         }
 
 
         gameObjects.forEach(go -> go.update(dt));
 
         renderer.render();
+
+        save(Scenes.LEVEL_EDITOR.getPath());
     }
 
     @Override
     public void imgui() {
+        ImGui.begin("Level Editor");
 
-    }
+        ImVec2 windowPos = new ImVec2();
+        ImGui.getWindowPos(windowPos);
+        ImVec2 windowsSize = new ImVec2();
+        ImGui.getWindowSize(windowsSize);
+        ImVec2 itemSpacing = new ImVec2();
+        ImGui.getStyle().getItemSpacing(itemSpacing);
 
-    private void loadResources() {
-        AssetPool.getShader(Shaders.DEFAULT);
-        AssetPool.addSpriteSheet(SpriteSheets.SPRITESHEET, new SpriteSheet(AssetPool.getTexture(SpriteSheets.SPRITESHEET), 16, 16, 26, 0));
+        float windowX2 = windowPos.x + windowsSize.x;
+        for (int i = 0; i < decorationsAndBlocks.size(); i++) {
+            Sprite sprite = decorationsAndBlocks.getSprite(i);
+            float spriteWidth = sprite.getWidth() * 4;
+            float spriteHeight = sprite.getHeight() * 4;
+            int id = sprite.getTextureId();
+            Vector2f[] texCoords = sprite.getTexCoords();
+
+            ImGui.pushID(i);
+            if (ImGui.imageButton(id, spriteWidth, spriteHeight, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
+                LOGGER.info("Button " + i + " clicked");
+            }
+            ImGui.popID();
+
+            ImVec2 lastBtnPos = new ImVec2();
+            ImGui.getItemRectMax(lastBtnPos);
+            float lastButtonX2 = lastBtnPos.x;
+            float nextButtonX2 = lastButtonX2 + itemSpacing.x + spriteWidth;
+
+            if (i + 1 < decorationsAndBlocks.size() && nextButtonX2 < windowX2) ImGui.sameLine();
+        }
+
+        ImGui.end();
     }
 }

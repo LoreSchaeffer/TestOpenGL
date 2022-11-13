@@ -1,15 +1,16 @@
 package it.multicoredev.ui;
 
+import it.multicoredev.ui.components.SpriteSheet;
 import it.multicoredev.ui.listeners.KeyListener;
 import it.multicoredev.ui.listeners.MouseListener;
-import it.multicoredev.ui.scenes.LevelEditorScene;
-import it.multicoredev.ui.scenes.LevelScene;
+import it.multicoredev.ui.registries.Scenes;
+import it.multicoredev.ui.registries.Shaders;
+import it.multicoredev.ui.registries.SpriteSheets;
 import it.multicoredev.ui.scenes.Scene;
-import org.lwjgl.Version;
+import it.multicoredev.utils.AssetPool;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
-import static it.multicoredev.App.LOGGER;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11C.*;
@@ -52,7 +53,7 @@ public class Window {
     private String title;
     private long windowId;
     public float[] windowColor = new float[]{0.1f, 0.1f, 0.1f, 0.1f};
-    private ImGuiLayer imguiLayer;
+    private ImGuiLayer imGuiLayer;
 
     private static Window window = null;
 
@@ -96,28 +97,17 @@ public class Window {
         return get().currentScene;
     }
 
-    public static void setScene(int scene) {
-        switch (scene) {
-            case 0 -> {
-                get().currentScene = new LevelEditorScene();
-                get().currentScene.init();
-                get().currentScene.start();
-            }
-            case 1 -> {
-                get().currentScene = new LevelScene();
-                get().currentScene.init();
-                get().currentScene.start();
-            }
-            default -> {
-                LOGGER.error("Scene not found");
-                System.exit(-1);
-            }
-        }
+    public static void setScene(Scenes scene) {
+        Scene newScene = scene.getInstance();
+        if (newScene == null) throw new IllegalStateException("Scene not initialized");
+
+        get().currentScene = newScene;
+        newScene.load(scene.getPath());
+        newScene.init();
+        newScene.start();
     }
 
     public void run() {
-        LOGGER.info("Running window with LWJGL " + Version.getVersion() + "!");
-
         init();
         loop();
 
@@ -179,10 +169,12 @@ public class Window {
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-        imguiLayer = new ImGuiLayer(windowId);
-        imguiLayer.init();
+        loadResources();
 
-        Window.setScene(0);
+        imGuiLayer = new ImGuiLayer(windowId);
+        imGuiLayer.init();
+
+        Window.setScene(Scenes.LEVEL_EDITOR);
     }
 
     private void loop() {
@@ -199,8 +191,7 @@ public class Window {
 
             if (dt >= 0) currentScene.update(dt);
 
-            imguiLayer.update(dt, currentScene);
-
+            imGuiLayer.update(dt, currentScene);
             glfwSwapBuffers(windowId);
 
             endTime = (float) glfwGetTime();
@@ -208,5 +199,14 @@ public class Window {
             dt = endTime - beginTime;
             beginTime = endTime;
         }
+    }
+
+    private void loadResources() {
+        AssetPool.getShader(Shaders.DEFAULT);
+
+        AssetPool.addSpriteSheet(SpriteSheets.SPRITESHEET, new SpriteSheet(AssetPool.getTexture(SpriteSheets.SPRITESHEET), 16, 16, 26, 0));
+        AssetPool.addSpriteSheet(SpriteSheets.DECORATIONS_AND_BLOCKS, new SpriteSheet(AssetPool.getTexture(SpriteSheets.DECORATIONS_AND_BLOCKS), 16, 16, 80, 0));
+        AssetPool.addSpriteSheet(SpriteSheets.ICONS, new SpriteSheet(AssetPool.getTexture(SpriteSheets.ICONS), 16, 16, 16, 0));
+        AssetPool.addSpriteSheet(SpriteSheets.PIPES, new SpriteSheet(AssetPool.getTexture(SpriteSheets.PIPES), 16, 16, 6, 0));
     }
 }

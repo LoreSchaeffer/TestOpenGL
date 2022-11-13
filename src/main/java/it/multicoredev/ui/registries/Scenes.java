@@ -1,4 +1,10 @@
-package it.multicoredev.utils;
+package it.multicoredev.ui.registries;
+
+import it.multicoredev.ui.scenes.LevelEditorScene;
+import it.multicoredev.ui.scenes.LevelScene;
+import it.multicoredev.ui.scenes.Scene;
+
+import static it.multicoredev.App.LOGGER;
 
 /**
  * BSD 3-Clause License
@@ -31,9 +37,32 @@ package it.multicoredev.utils;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class SpriteSheets {
-    public static final String SPRITESHEET = "assets/textures/spritesheets/spritesheet.png";
-    public static final String DECORATIONS_AND_BLOCKS = "assets/textures/spritesheets/decorations_and_blocks.png";
-    public static final String ICONS = "assets/textures/spritesheets/icons.png";
-    public static final String PIPES = "assets/textures/spritesheets/pipes.png";
+public enum Scenes {
+    LEVEL_EDITOR("level_editor", LevelEditorScene.class),
+    LEVEL("level", LevelScene.class);
+
+    private final String id;
+    private final Class<? extends Scene> sceneClass;
+
+    Scenes(String id, Class<? extends Scene> sceneClass) {
+        this.id = id;
+        this.sceneClass = sceneClass;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getPath() {
+        return "saves/" + id + ".json";
+    }
+
+    public Scene getInstance() {
+        try {
+            return sceneClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            LOGGER.error("Error while creating scene '" + id + "'", e);
+            return null;
+        }
+    }
 }

@@ -1,10 +1,4 @@
-package it.multicoredev.ui.components;
-
-import it.multicoredev.ui.Component;
-import it.multicoredev.ui.Transform;
-import it.multicoredev.ui.renderer.Texture;
-import org.joml.Vector2f;
-import org.joml.Vector4f;
+package it.multicoredev.ui.registries;
 
 /**
  * BSD 3-Clause License
@@ -37,69 +31,9 @@ import org.joml.Vector4f;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class SpriteRenderer extends Component {
-    private Vector4f color = new Vector4f(1, 1, 1, 1);
-    private Sprite sprite = new Sprite();
-
-    private transient Transform lastTransform;
-    private transient boolean isDirty = true;
-
-    public SpriteRenderer() {
-
-    }
-
-    public SpriteRenderer(Vector4f color) {
-        this.color = color;
-    }
-
-    public SpriteRenderer(Sprite sprite) {
-        this.sprite = sprite;
-    }
-
-    @Override
-    public void start() {
-        lastTransform = gameObject.transform.copy();
-    }
-
-    @Override
-    public void update(float dt) {
-        if (!lastTransform.equals(gameObject.transform)) {
-            gameObject.transform.copyTo(lastTransform);
-            isDirty = true;
-        }
-    }
-
-    public Vector4f getColor() {
-        return color;
-    }
-
-    public void setColor(Vector4f color) {
-        if (this.color.equals(color)) return;
-
-        this.color.set(color);
-        isDirty = true;
-    }
-
-    public Texture getTexture() {
-        return sprite.getTexture();
-    }
-
-    public Vector2f[] getTexCoords() {
-        return sprite.getTexCoords();
-    }
-
-    public void setSprite(Sprite sprite) {
-        //if (this.sprite.equals(sprite)) return;
-
-        this.sprite = sprite;
-        isDirty = true;
-    }
-
-    public boolean isDirty() {
-        return isDirty;
-    }
-
-    public void setClean() {
-        isDirty = false;
-    }
+public class SpriteSheets {
+    public static final String SPRITESHEET = "assets/textures/spritesheets/spritesheet.png";
+    public static final String DECORATIONS_AND_BLOCKS = "assets/textures/spritesheets/decorations_and_blocks.png";
+    public static final String ICONS = "assets/textures/spritesheets/icons.png";
+    public static final String PIPES = "assets/textures/spritesheets/pipes.png";
 }

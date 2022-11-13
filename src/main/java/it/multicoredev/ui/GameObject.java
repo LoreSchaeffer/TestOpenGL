@@ -1,5 +1,11 @@
 package it.multicoredev.ui;
 
+import com.google.gson.*;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,10 +42,12 @@ import static it.multicoredev.App.LOGGER;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+@JsonAdapter(GameObject.JsonAdapter.class)
 public class GameObject {
     private final String name;
     public Transform transform;
-    private int zIndex;
+    @SerializedName("z_index")
+    private final int zIndex;
     private final List<Component> components = new ArrayList<>();
 
     public GameObject(String name, Transform transform, int zIndex) {
@@ -101,5 +109,27 @@ public class GameObject {
 
     public void imgui() {
         components.forEach(Component::imgui);
+    }
+
+    public static class JsonAdapter implements JsonDeserializer<GameObject> {
+
+        @Override
+        public GameObject deserialize(JsonElement json, Type t, JsonDeserializationContext ctx) throws JsonParseException {
+            if (!json.isJsonObject()) throw new JsonParseException("Invalid or malformed GameObject: not an object");
+            JsonObject obj = json.getAsJsonObject();
+
+            if (!obj.has("name") || !obj.has("transform") || !obj.has("z_index") || !obj.has("components"))
+                throw new JsonParseException("Invalid or malformed GameObject: missing name or transform, z_index or components");
+
+            String name = obj.get("name").getAsString();
+            Transform transform = ctx.deserialize(obj.get("transform"), Transform.class);
+            int zIndex = obj.get("z_index").getAsInt();
+            List<Component> components = ctx.deserialize(obj.get("components"), new TypeToken<List<Component>>() {}.getType());
+
+            GameObject go = new GameObject(name, transform, zIndex);
+            components.forEach(go::addComponent);
+
+            return go;
+        }
     }
 }

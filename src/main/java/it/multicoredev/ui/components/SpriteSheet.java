@@ -60,7 +60,7 @@ public class SpriteSheet {
                     new Vector2f(leftX, topY)
             };
 
-            sprites.add(new Sprite(texture, texCooords));
+            sprites.add(new Sprite(texture, texCooords, spriteWidth, spriteHeight));
 
             currentX += spriteWidth + spacing;
             if (currentX >= texture.getWidth()) {
@@ -72,5 +72,9 @@ public class SpriteSheet {
 
     public Sprite getSprite(int index) {
         return sprites.get(index);
+    }
+
+    public int size() {
+        return sprites.size();
     }
 }

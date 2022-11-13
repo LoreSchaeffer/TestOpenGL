@@ -43,14 +43,42 @@ import static org.lwjgl.stb.STBImage.*;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 public class Texture {
-    private final File file;
+    private String path;
 
     private int id;
     private int width;
     private int height;
 
+    public Texture() {
+
+    }
+
     public Texture(File file) {
-        this.file = file;
+        init(file);
+    }
+
+    public void bind() {
+        glBindTexture(GL_TEXTURE_2D, id);
+    }
+
+    public void unbind() {
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void init(File file) {
+        path = file.getPath();
 
         // Generate texture on GPU
         id = glGenTextures();
@@ -90,21 +118,5 @@ public class Texture {
         } else {
             LOGGER.error("Failed to load texture: " + file.getPath());
         }
-    }
-
-    public void bind() {
-        glBindTexture(GL_TEXTURE_2D, id);
-    }
-
-    public void unbind() {
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
     }
 }

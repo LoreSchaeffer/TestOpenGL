@@ -35,28 +35,63 @@ import org.joml.Vector2f;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 public class Sprite {
-    private Texture texture;
-    private Vector2f[] texCoords;
+    private Texture texture = null;
+    private Vector2f[] texCoords = new Vector2f[]{
+            new Vector2f(1, 1),
+            new Vector2f(1, 0),
+            new Vector2f(0, 0),
+            new Vector2f(0, 1)
+    };
+    private float width;
+    private float height;
 
-    public Sprite(Texture texture, Vector2f[] texCoords) {
-        this.texture = texture;
-        this.texCoords = texCoords;
+    public Sprite() {
     }
 
-    public Sprite(Texture texture) {
-        this(texture, new Vector2f[]{
-                new Vector2f(1, 1),
-                new Vector2f(1, 0),
-                new Vector2f(0, 0),
-                new Vector2f(0, 1)
-        });
+    public Sprite(Texture texture, Vector2f[] texCoords, float width, float height) {
+        this.texture = texture;
+        this.texCoords = texCoords;
+        this.width = width;
+        this.height = height;
     }
 
     public Texture getTexture() {
         return texture;
     }
 
+    public Sprite setTexture(Texture texture) {
+        this.texture = texture;
+        return this;
+    }
+
     public Vector2f[] getTexCoords() {
         return texCoords;
+    }
+
+    public Sprite setTexCoords(Vector2f[] texCoords) {
+        this.texCoords = texCoords;
+        return this;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public Sprite setWidth(float width) {
+        this.width = width;
+        return this;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public Sprite setHeight(float height) {
+        this.height = height;
+        return this;
+    }
+
+    public int getTextureId() {
+        return texture == null ? -1 : texture.getId();
     }
 }

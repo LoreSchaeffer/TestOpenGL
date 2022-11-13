@@ -1,12 +1,18 @@
 package it.multicoredev.ui.scenes;
 
+import com.google.gson.reflect.TypeToken;
 import imgui.ImGui;
 import it.multicoredev.ui.Camera;
 import it.multicoredev.ui.GameObject;
 import it.multicoredev.ui.renderer.Renderer;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
+import static it.multicoredev.App.GSON;
+import static it.multicoredev.App.LOGGER;
 
 /**
  * BSD 3-Clause License
@@ -43,13 +49,12 @@ public abstract class Scene {
     protected Renderer renderer = new Renderer();
     protected Camera camera;
     protected final List<GameObject> gameObjects = new ArrayList<>();
-    protected GameObject activeGameObject = null;
     private boolean isRunning = false;
-
-    public Scene() {
-    }
+    protected transient GameObject activeGameObject = null;
+    protected transient boolean loadedLevel = false;
 
     public void init() {
+
     }
 
     public void start() {
@@ -66,8 +71,16 @@ public abstract class Scene {
 
     public abstract void update(float dt);
 
-    public Camera camera () {
+    public Camera camera() {
         return camera;
+    }
+
+    public GameObject getGameObject(String name) {
+        for (GameObject obj : gameObjects) {
+            if (obj.getName().equals(name)) return obj;
+        }
+
+        throw new IllegalArgumentException("GameObject not found");
     }
 
     public void sceneImgui() {
@@ -82,5 +95,24 @@ public abstract class Scene {
 
     public void imgui() {
 
+    }
+
+    public void save(String path) {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), StandardCharsets.UTF_8))) {
+            writer.write(GSON.toJson(gameObjects));
+        } catch (Exception e) {
+            LOGGER.error("Error while saving scene", e);
+        }
+    }
+
+    public void load(String path) {
+        try (InputStreamReader reader = new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8)) {
+            gameObjects.clear();
+            List<GameObject> objects = GSON.fromJson(reader, new TypeToken<List<GameObject>>() {}.getType());
+            objects.forEach(this::addGameObject);
+            loadedLevel = true;
+        } catch (Exception e) {
+            LOGGER.warn("Cannot load scene");
+        }
     }
 }

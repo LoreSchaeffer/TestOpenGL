@@ -44,7 +44,8 @@ import static org.lwjgl.opengl.GL20.*;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 public class Shader {
-    private final File file;
+    private transient final File file;
+    private final String path;
 
     private int shaderProgramId;
     private boolean inUse = false;
@@ -53,6 +54,7 @@ public class Shader {
 
     public Shader(File file) {
         this.file = file;
+        path = file.getPath();
 
         try {
             String src = new String(Files.readAllBytes(this.file.toPath()));

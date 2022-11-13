@@ -3,7 +3,7 @@ package it.multicoredev.ui.renderer;
 import it.multicoredev.ui.Window;
 import it.multicoredev.ui.components.SpriteRenderer;
 import it.multicoredev.utils.AssetPool;
-import it.multicoredev.utils.Shaders;
+import it.multicoredev.ui.registries.Shaders;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
@@ -155,8 +155,8 @@ public class RenderBatch implements Comparable<RenderBatch> {
 
         // Use shader
         shader.use();
-        shader.uploadMat4f("uProjection", Window.getScene().camera().getProjectionMatrix());
-        shader.uploadMat4f("uView", Window.getScene().camera().getViewMatrix());
+        shader.uploadMat4f("uProjection", Window.getScene().camera().getProjection());
+        shader.uploadMat4f("uView", Window.getScene().camera().getView());
 
         for (int i = 0; i < textures.size(); i++) {
             glActiveTexture(GL_TEXTURE0 + i + 1);

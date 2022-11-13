@@ -1,5 +1,7 @@
 package it.multicoredev;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import it.multicoredev.ui.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +39,10 @@ import org.slf4j.LoggerFactory;
  */
 public class App {
     public static final Logger LOGGER = LoggerFactory.getLogger("App");
+    public static final Gson GSON = new GsonBuilder()
+            .setPrettyPrinting()
+            .disableHtmlEscaping()
+            .create();
 
     void run() {
         Window window = Window.create(1920, 1080, "Test Window");

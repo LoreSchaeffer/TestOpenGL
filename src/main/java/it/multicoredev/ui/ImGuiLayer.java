@@ -52,14 +52,8 @@ public class ImGuiLayer {
         this.windowId = windowId;
     }
 
-    // Initialize Dear ImGui.
     public void init() {
-        // IMPORTANT!!
-        // This line is critical for Dear ImGui to work.
         ImGui.createContext();
-
-        // ------------------------------------------------------------
-        // Initialize ImGuiIO config
         final ImGuiIO io = ImGui.getIO();
 
         io.setIniFilename("imgui.ini");
@@ -67,8 +61,7 @@ public class ImGuiLayer {
         io.setBackendFlags(ImGuiBackendFlags.HasMouseCursors); // Mouse cursors to display while resizing windows etc.
         io.setBackendPlatformName("imgui_java_impl_glfw");
 
-        // ------------------------------------------------------------
-        // Keyboard mapping. ImGui will use those indices to peek into the io.KeysDown[] array.
+        // Keyboard mapping.
         final int[] keyMap = new int[ImGuiKey.COUNT];
         keyMap[ImGuiKey.Tab] = GLFW_KEY_TAB;
         keyMap[ImGuiKey.LeftArrow] = GLFW_KEY_LEFT;
@@ -94,7 +87,6 @@ public class ImGuiLayer {
         keyMap[ImGuiKey.Z] = GLFW_KEY_Z;
         io.setKeyMap(keyMap);
 
-        // ------------------------------------------------------------
         // Mouse cursors mapping
         mouseCursors[ImGuiMouseCursor.Arrow] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
         mouseCursors[ImGuiMouseCursor.TextInput] = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
@@ -106,9 +98,7 @@ public class ImGuiLayer {
         mouseCursors[ImGuiMouseCursor.Hand] = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
         mouseCursors[ImGuiMouseCursor.NotAllowed] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
 
-        // ------------------------------------------------------------
         // GLFW callbacks to handle user input
-
         glfwSetKeyCallback(windowId, (w, key, scancode, action, mods) -> {
             if (action == GLFW_PRESS) {
                 io.setKeysDown(key, true);
@@ -160,18 +150,12 @@ public class ImGuiLayer {
             @Override
             public String get() {
                 final String clipboardString = glfwGetClipboardString(windowId);
-                if (clipboardString != null) {
-                    return clipboardString;
-                } else {
-                    return "";
-                }
+                if (clipboardString != null) return clipboardString;
+                else return "";
             }
         });
 
-        // ------------------------------------------------------------
         // Fonts configuration
-        // Read: https://raw.githubusercontent.com/ocornut/imgui/master/docs/FONTS.txt
-
         final ImFontAtlas fontAtlas = io.getFonts();
         final ImFontConfig fontConfig = new ImFontConfig(); // Natively allocated object, should be explicitly destroyed
 
@@ -184,23 +168,21 @@ public class ImGuiLayer {
 
         fontConfig.destroy(); // After all fonts were added we don't need this config more
 
-        // ------------------------------------------------------------
         // Use freetype instead of stb_truetype to build a fonts texture
         ImGuiFreeType.buildFontAtlas(fontAtlas, ImGuiFreeType.RasterizerFlags.LightHinting);
 
         // Method initializes LWJGL3 renderer.
-        // This method SHOULD be called after you've initialized your ImGui configuration (fonts and so on).
-        // ImGui context should be created as well.
         imGuiGl3.init("#version 330 core");
     }
 
     public void update(float dt, Scene currentScene) {
         startFrame(dt);
 
-        // Any Dear ImGui code SHOULD go between ImGui.newFrame()/ImGui.render() methods
+        // Any ImGui code SHOULD go between ImGui.newFrame()/ImGui.render() methods
         ImGui.newFrame();
         currentScene.sceneImgui();
-        ImGui.showDemoWindow();
+        // Demo ImGui window
+        //ImGui.showDemoWindow();
         ImGui.render();
 
         endFrame();

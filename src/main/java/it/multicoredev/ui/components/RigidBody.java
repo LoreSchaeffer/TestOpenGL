@@ -1,4 +1,8 @@
-package it.multicoredev.utils;
+package it.multicoredev.ui.components;
+
+import it.multicoredev.ui.Component;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 /**
  * BSD 3-Clause License
@@ -31,6 +35,9 @@ package it.multicoredev.utils;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class Shaders {
-    public static final String DEFAULT = "assets/shaders/default.glsl";
+public class RigidBody extends Component {
+    private int colliderType = 0;
+    private float friction = 0.8f;
+    private Vector3f velocity = new Vector3f(0, 0.5f, 0);
+    private transient Vector4f tmp = new Vector4f();
 }
