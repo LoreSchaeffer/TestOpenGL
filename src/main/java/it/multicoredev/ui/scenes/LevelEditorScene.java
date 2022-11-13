@@ -5,6 +5,7 @@ import imgui.ImVec2;
 import it.multicoredev.ui.Camera;
 import it.multicoredev.ui.GameObject;
 import it.multicoredev.ui.Prefabs;
+import it.multicoredev.ui.Transform;
 import it.multicoredev.ui.components.MouseControls;
 import it.multicoredev.ui.components.Sprite;
 import it.multicoredev.ui.components.SpriteRenderer;
@@ -13,6 +14,7 @@ import it.multicoredev.ui.registries.Scenes;
 import it.multicoredev.ui.registries.SpriteSheets;
 import it.multicoredev.utils.AssetPool;
 import org.joml.Vector2f;
+import org.joml.Vector4f;
 
 import static it.multicoredev.App.LOGGER;
 
@@ -66,21 +68,21 @@ public class LevelEditorScene extends Scene {
             return;
         }
 
-//        GameObject mario = new GameObject("mario", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)));
-//        mario.addComponent(new SpriteRenderer(decorationsAndBlocks.getSprite(9)));
-//        addGameObject(mario);
-//
-//        GameObject goomba = new GameObject("goomba", new Transform(new Vector2f(400, 100), new Vector2f(256, 256)));
-//        goomba.addComponent(new SpriteRenderer(decorationsAndBlocks.getSprite(15)));
-//        addGameObject(goomba);
-//
-//        GameObject s1 = new GameObject("sqr_1", new Transform(new Vector2f(100, 400), new Vector2f(256, 256)), 1);
-//        s1.addComponent(new SpriteRenderer(new Vector4f(1, 0, 0, 0.6f)));
-//        addGameObject(s1);
-//
-//        GameObject s2 = new GameObject("sqr_2", new Transform(new Vector2f(250, 400), new Vector2f(256, 256)), 2);
-//        s2.addComponent(new SpriteRenderer(new Vector4f(0, 1, 0, 0.6f)));
-//        addGameObject(s2);
+        GameObject mario = new GameObject("mario", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)));
+        mario.addComponent(new SpriteRenderer(decorationsAndBlocks.getSprite(9)));
+        addGameObject(mario);
+
+        GameObject goomba = new GameObject("goomba", new Transform(new Vector2f(400, 100), new Vector2f(256, 256)));
+        goomba.addComponent(new SpriteRenderer(decorationsAndBlocks.getSprite(15)));
+        addGameObject(goomba);
+
+        GameObject s1 = new GameObject("sqr_1", new Transform(new Vector2f(100, 400), new Vector2f(256, 256)), 1);
+        s1.addComponent(new SpriteRenderer(new Vector4f(1, 0, 0, 0.6f)));
+        addGameObject(s1);
+
+        GameObject s2 = new GameObject("sqr_2", new Transform(new Vector2f(250, 400), new Vector2f(256, 256)), 2);
+        s2.addComponent(new SpriteRenderer(new Vector4f(0, 1, 0, 0.6f)));
+        addGameObject(s2);
     }
 
     private int spriteIndex = 9;
