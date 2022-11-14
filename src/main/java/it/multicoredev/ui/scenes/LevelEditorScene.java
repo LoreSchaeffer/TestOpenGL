@@ -130,16 +130,8 @@ public class LevelEditorScene extends Scene {
         ImGui.getStyle().getItemSpacing(itemSpacing);
 
         float windowX2 = windowPos.x + windowsSize.x;
-        for (int i = 0; i < decorationsAndBlocks.size() + icons.size() + pipes.size(); i++) {
-            Sprite sprite;
-            if (i < decorationsAndBlocks.size()) {
-                sprite = decorationsAndBlocks.getSprite(i);
-            } else if (i < decorationsAndBlocks.size() + icons.size()) {
-                sprite = icons.getSprite(i - decorationsAndBlocks.size());
-            } else {
-                sprite = pipes.getSprite(i - decorationsAndBlocks.size() - icons.size());
-            }
-
+        for (int i = 0; i < decorationsAndBlocks.size(); i++) {
+            Sprite sprite = decorationsAndBlocks.getSprite(i);
             float spriteWidth = sprite.getWidth() * 3;
             float spriteHeight = sprite.getHeight() * 3;
             int id = sprite.getTextureId();
@@ -159,7 +151,7 @@ public class LevelEditorScene extends Scene {
             float lastButtonX2 = lastBtnPos.x;
             float nextButtonX2 = lastButtonX2 + itemSpacing.x + spriteWidth;
 
-            if (i + 1 < decorationsAndBlocks.size() + icons.size() + pipes.size() && nextButtonX2 < windowX2) ImGui.sameLine();
+            if (i + 1 < decorationsAndBlocks.size() && nextButtonX2 < windowX2) ImGui.sameLine();
         }
 
         ImGui.end();
