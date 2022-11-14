@@ -63,11 +63,16 @@ public abstract class Scene {
             obj.start();
             renderer.add(obj);
         });
+
+        isRunning = true;
     }
 
     public void addGameObject(GameObject obj) {
         gameObjects.add(obj);
-        if (isRunning) obj.start();
+        if (isRunning) {
+            obj.start();
+            renderer.add(obj);
+        }
     }
 
     public abstract void update(float dt);

@@ -51,6 +51,8 @@ import static it.multicoredev.App.LOGGER;
  */
 public class LevelEditorScene extends Scene {
     private SpriteSheet decorationsAndBlocks;
+    private SpriteSheet icons;
+    private SpriteSheet pipes;
     MouseControls mouseControls = new MouseControls();
 
     public LevelEditorScene() {
@@ -62,13 +64,15 @@ public class LevelEditorScene extends Scene {
         camera = new Camera();
 
         decorationsAndBlocks = AssetPool.getSpriteSheet(SpriteSheets.DECORATIONS_AND_BLOCKS);
+        icons = AssetPool.getSpriteSheet(SpriteSheets.ICONS);
+        pipes = AssetPool.getSpriteSheet(SpriteSheets.PIPES);
 
         if (loadedLevel) {
-            activeGameObject = getGameObject("goomba");
+            //activeGameObject = getGameObject("goomba");
             return;
         }
 
-        GameObject mario = new GameObject("mario", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)));
+        /*GameObject mario = new GameObject("mario", new Transform(new Vector2f(100, 100), new Vector2f(256, 256)));
         mario.addComponent(new SpriteRenderer(decorationsAndBlocks.getSprite(9)));
         addGameObject(mario);
 
@@ -82,12 +86,12 @@ public class LevelEditorScene extends Scene {
 
         GameObject s2 = new GameObject("sqr_2", new Transform(new Vector2f(250, 400), new Vector2f(256, 256)), 2);
         s2.addComponent(new SpriteRenderer(new Vector4f(0, 1, 0, 0.6f)));
-        addGameObject(s2);
+        addGameObject(s2);*/
     }
 
-    private int spriteIndex = 9;
-    private float spriteFlipTime = 0.2f;
-    private float spriteFlipTimeLeft = 0.0f;
+    //private int spriteIndex = 9;
+    //private float spriteFlipTime = 0.2f;
+    //private float spriteFlipTimeLeft = 0.0f;
 
     @Override
     public void update(float dt) {
@@ -95,7 +99,7 @@ public class LevelEditorScene extends Scene {
 
         mouseControls.update(dt);
 
-        spriteFlipTimeLeft -= dt;
+        /*spriteFlipTimeLeft -= dt;
         if (spriteFlipTimeLeft <= 0) {
             spriteFlipTimeLeft = spriteFlipTime;
             spriteIndex++;
@@ -104,7 +108,7 @@ public class LevelEditorScene extends Scene {
             }
 
             getGameObject("mario").getComponent(SpriteRenderer.class).setSprite(AssetPool.getSpriteSheet(SpriteSheets.SPRITESHEET).getSprite(spriteIndex));
-        }
+        }*/
 
 
         gameObjects.forEach(go -> go.update(dt));
@@ -126,15 +130,23 @@ public class LevelEditorScene extends Scene {
         ImGui.getStyle().getItemSpacing(itemSpacing);
 
         float windowX2 = windowPos.x + windowsSize.x;
-        for (int i = 0; i < decorationsAndBlocks.size(); i++) {
-            Sprite sprite = decorationsAndBlocks.getSprite(i);
-            float spriteWidth = sprite.getWidth() * 4;
-            float spriteHeight = sprite.getHeight() * 4;
+        for (int i = 0; i < decorationsAndBlocks.size() + icons.size() + pipes.size(); i++) {
+            Sprite sprite;
+            if (i < decorationsAndBlocks.size()) {
+                sprite = decorationsAndBlocks.getSprite(i);
+            } else if (i < decorationsAndBlocks.size() + icons.size()) {
+                sprite = icons.getSprite(i - decorationsAndBlocks.size());
+            } else {
+                sprite = pipes.getSprite(i - decorationsAndBlocks.size() - icons.size());
+            }
+
+            float spriteWidth = sprite.getWidth() * 3;
+            float spriteHeight = sprite.getHeight() * 3;
             int id = sprite.getTextureId();
             Vector2f[] texCoords = sprite.getTexCoords();
 
             ImGui.pushID(i);
-            if (ImGui.imageButton(id, spriteWidth, spriteHeight, texCoords[0].x, texCoords[0].y, texCoords[2].x, texCoords[2].y)) {
+            if (ImGui.imageButton(id, spriteWidth, spriteHeight, texCoords[2].x, texCoords[0].y, texCoords[0].x, texCoords[2].y)) {
                 GameObject obj = Prefabs.generateSpriteObject(sprite, spriteWidth, spriteHeight, 0);
 
                 // Attach object to mouse cursor
@@ -147,7 +159,7 @@ public class LevelEditorScene extends Scene {
             float lastButtonX2 = lastBtnPos.x;
             float nextButtonX2 = lastButtonX2 + itemSpacing.x + spriteWidth;
 
-            if (i + 1 < decorationsAndBlocks.size() && nextButtonX2 < windowX2) ImGui.sameLine();
+            if (i + 1 < decorationsAndBlocks.size() + icons.size() + pipes.size() && nextButtonX2 < windowX2) ImGui.sameLine();
         }
 
         ImGui.end();
