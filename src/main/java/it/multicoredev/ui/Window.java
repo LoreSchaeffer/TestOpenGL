@@ -100,6 +100,14 @@ public class Window {
         return get().currentScene;
     }
 
+    public static FrameBuffer getFrameBuffer() {
+        return get().frameBuffer;
+    }
+
+    public static float getTargetAspectRatio() {
+        return (float) getWidth() / (float) getHeight();
+    }
+
     public static void setScene(Scenes scene) {
         Scene newScene = scene.getInstance();
         if (newScene == null) throw new IllegalStateException("Scene not initialized");
@@ -178,6 +186,7 @@ public class Window {
         imGuiLayer.init();
 
         frameBuffer = new FrameBuffer(2560, 1440);
+        glViewport(0, 0, 2560, 1440);
 
         Window.setScene(Scenes.LEVEL_EDITOR);
     }
@@ -193,17 +202,17 @@ public class Window {
 
             DebugDraw.beginFrame();
 
+            frameBuffer.bind();
+
             glClearColor(windowColor[0], windowColor[1], windowColor[2], windowColor[3]);
             glClear(GL_COLOR_BUFFER_BIT);
-
-            //frameBuffer.bind();
 
             if (dt >= 0) {
                 DebugDraw.draw();
                 currentScene.update(dt);
             }
 
-            //frameBuffer.unbind();
+            frameBuffer.unbind();
 
             imGuiLayer.update(dt, currentScene);
             glfwSwapBuffers(windowId);

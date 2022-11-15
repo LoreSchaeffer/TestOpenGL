@@ -6,6 +6,7 @@ import imgui.callback.ImStrSupplier;
 import imgui.flag.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.type.ImBoolean;
+import it.multicoredev.ui.editor.GameViewWindow;
 import it.multicoredev.ui.listeners.KeyListener;
 import it.multicoredev.ui.listeners.MouseListener;
 import it.multicoredev.ui.scenes.Scene;
@@ -136,7 +137,7 @@ public class ImGuiLayer {
                 ImGui.setWindowFocus(null);
             }
 
-            if (!io.getWantCaptureMouse()) MouseListener.mouseButtonCallback(w, button, action, mods);
+            if (!io.getWantCaptureMouse() || !GameViewWindow.getWantCaptureMouse()) MouseListener.mouseButtonCallback(w, button, action, mods);
         });
 
         glfwSetScrollCallback(windowId, (w, xOffset, yOffset) -> {
@@ -187,8 +188,8 @@ public class ImGuiLayer {
         ImGui.newFrame();
         setupDockSpace();
         currentScene.sceneImgui();
-        // Demo ImGui window
-        ImGui.showDemoWindow();
+        ImGui.showDemoWindow(); // Demo ImGui window
+        GameViewWindow.imgui();
         ImGui.end();
         ImGui.render();
 
@@ -242,6 +243,5 @@ public class ImGuiLayer {
 
         // DockSpace
         ImGui.dockSpace(ImGui.getID("DockSpace"));
-
     }
 }

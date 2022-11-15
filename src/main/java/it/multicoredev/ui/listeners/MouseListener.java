@@ -1,6 +1,9 @@
 package it.multicoredev.ui.listeners;
 
+import it.multicoredev.ui.Camera;
 import it.multicoredev.ui.Window;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
@@ -47,6 +50,9 @@ public class MouseListener {
     private double lastY = 0;
     private boolean[] mouseButtonPressed = new boolean[9];
     private boolean isDragging;
+
+    private Vector2f gameViewPortPos = new Vector2f();
+    private Vector2f gameViewPortSize = new Vector2f();
 
     private MouseListener() {
     }
@@ -96,18 +102,28 @@ public class MouseListener {
     }
 
     public static float getOrthoX() {
-        float currentX = getX();
-        currentX = (currentX / (float) Window.getWidth()) * 2.0f - 1.0f;
+        float currentX = getX() - get().gameViewPortPos.x;
+        currentX = (currentX / get().gameViewPortSize.x) * 2.0f - 1.0f;
         Vector4f mat = new Vector4f(currentX, 0, 0, 1);
-        mat.mul(Window.getScene().camera().getInverseProjection()).mul(Window.getScene().camera().getInverseView());
+
+        Camera camera = Window.getScene().camera();
+        Matrix4f viewProjection = new Matrix4f();
+        camera.getInverseView().mul(camera.getInverseProjection(), viewProjection);
+        mat.mul(viewProjection);
+
         return mat.x;
     }
 
     public static float getOrthoY() {
-        float currentY = Window.getHeight() - getY();
-        currentY = (currentY / (float) Window.getHeight()) * 2.0f - 1.0f;
+        float currentY = getY() - get().gameViewPortPos.y;
+        currentY = -((currentY / get().gameViewPortSize.y) * 2.0f - 1.0f);
         Vector4f mat = new Vector4f(0, currentY, 0, 1);
-        mat.mul(Window.getScene().camera().getInverseProjection()).mul(Window.getScene().camera().getInverseView());
+
+        Camera camera = Window.getScene().camera();
+        Matrix4f viewProjection = new Matrix4f();
+        camera.getInverseView().mul(camera.getInverseProjection(), viewProjection);
+        mat.mul(viewProjection);
+
         return mat.y;
     }
 
@@ -129,6 +145,22 @@ public class MouseListener {
 
     public static boolean isDragging() {
         return get().isDragging;
+    }
+
+    public Vector2f getGameViewPortPos() {
+        return gameViewPortPos;
+    }
+
+    public static void setGameViewPortPos(Vector2f gameViewPortPos) {
+        get().gameViewPortPos = gameViewPortPos;
+    }
+
+    public Vector2f getGameViewPortSize() {
+        return gameViewPortSize;
+    }
+
+    public static void setGameViewPortSize(Vector2f gameViewPortSize) {
+        get().gameViewPortSize = gameViewPortSize;
     }
 
     public static boolean isMouseButtonDown(int button) {
