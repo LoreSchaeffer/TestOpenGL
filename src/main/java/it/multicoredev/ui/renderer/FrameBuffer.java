@@ -1,9 +1,6 @@
-package it.multicoredev.ui.components;
+package it.multicoredev.ui.renderer;
 
-import it.multicoredev.ui.Transform;
-import it.multicoredev.ui.renderer.Texture;
-import org.joml.Vector2f;
-import org.joml.Vector4f;
+import static org.lwjgl.opengl.GL30C.*;
 
 /**
  * BSD 3-Clause License
@@ -36,73 +33,44 @@ import org.joml.Vector4f;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class SpriteRenderer extends Component {
-    private Vector4f color = new Vector4f(1, 1, 1, 1);
-    private Sprite sprite = new Sprite();
+public class FrameBuffer {
+    private final int fboId;
+    private final Texture texture;
 
-    private transient Transform lastTransform;
-    private transient boolean isDirty = true;
+    public FrameBuffer(int width, int height) {
+        // Generate the framebuffer
+        fboId = glGenFramebuffers();
+        glBindFramebuffer(GL_FRAMEBUFFER, fboId);
 
-    public SpriteRenderer() {
+        // Create the texture to render the data to
+        texture = new Texture(width, height);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.getId(), 0);
 
+        // Create renderbuffer store the depth info
+        int rboId = glGenRenderbuffers();
+        glBindRenderbuffer(GL_RENDERBUFFER, rboId);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, width, height);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboId);
+
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) throw new RuntimeException("Failed to create framebuffer");
+
+        // Unbind the framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    public SpriteRenderer(Vector4f color) {
-        this.color = color;
+    public int getFboId() {
+        return fboId;
     }
 
-    public SpriteRenderer(Sprite sprite) {
-        this.sprite = sprite;
+    public int getTextureId() {
+        return texture.getId();
     }
 
-    @Override
-    public void start() {
-        lastTransform = gameObject.transform.copy();
+    public void bind() {
+        glBindFramebuffer(GL_FRAMEBUFFER, fboId);
     }
 
-    @Override
-    public void update(float dt) {
-        if (!lastTransform.equals(gameObject.transform)) {
-            gameObject.transform.copyTo(lastTransform);
-            isDirty = true;
-        }
-    }
-
-    public Vector4f getColor() {
-        return color;
-    }
-
-    public void setColor(Vector4f color) {
-        if (this.color.equals(color)) return;
-
-        this.color.set(color);
-        isDirty = true;
-    }
-
-    public Texture getTexture() {
-        return sprite.getTexture();
-    }
-
-    public void setTexture(Texture texture) {
-        sprite.setTexture(texture);
-    }
-
-    public Vector2f[] getTexCoords() {
-        return sprite.getTexCoords();
-    }
-
-    public void setSprite(Sprite sprite) {
-        //if (this.sprite.equals(sprite)) return;
-
-        this.sprite = sprite;
-        isDirty = true;
-    }
-
-    public boolean isDirty() {
-        return isDirty;
-    }
-
-    public void setClean() {
-        isDirty = false;
+    public void unbind() {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 }

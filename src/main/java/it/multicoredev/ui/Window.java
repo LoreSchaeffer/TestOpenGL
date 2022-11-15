@@ -7,6 +7,7 @@ import it.multicoredev.ui.registries.Scenes;
 import it.multicoredev.ui.registries.Shaders;
 import it.multicoredev.ui.registries.SpriteSheets;
 import it.multicoredev.ui.renderer.DebugDraw;
+import it.multicoredev.ui.renderer.FrameBuffer;
 import it.multicoredev.ui.scenes.Scene;
 import it.multicoredev.utils.AssetPool;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -55,6 +56,7 @@ public class Window {
     private long windowId;
     public float[] windowColor = new float[]{0.1f, 0.1f, 0.1f, 0.1f};
     private ImGuiLayer imGuiLayer;
+    private FrameBuffer frameBuffer;
 
     private static Window window = null;
 
@@ -175,6 +177,8 @@ public class Window {
         imGuiLayer = new ImGuiLayer(windowId);
         imGuiLayer.init();
 
+        frameBuffer = new FrameBuffer(2560, 1440);
+
         Window.setScene(Scenes.LEVEL_EDITOR);
     }
 
@@ -192,10 +196,14 @@ public class Window {
             glClearColor(windowColor[0], windowColor[1], windowColor[2], windowColor[3]);
             glClear(GL_COLOR_BUFFER_BIT);
 
+            //frameBuffer.bind();
+
             if (dt >= 0) {
                 DebugDraw.draw();
                 currentScene.update(dt);
             }
+
+            //frameBuffer.unbind();
 
             imGuiLayer.update(dt, currentScene);
             glfwSwapBuffers(windowId);

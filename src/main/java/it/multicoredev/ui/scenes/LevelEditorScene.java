@@ -5,10 +5,7 @@ import imgui.ImVec2;
 import it.multicoredev.ui.Camera;
 import it.multicoredev.ui.GameObject;
 import it.multicoredev.ui.Prefabs;
-import it.multicoredev.ui.components.GridLines;
-import it.multicoredev.ui.components.MouseControls;
-import it.multicoredev.ui.components.Sprite;
-import it.multicoredev.ui.components.SpriteSheet;
+import it.multicoredev.ui.components.*;
 import it.multicoredev.ui.registries.Scenes;
 import it.multicoredev.ui.registries.SpriteSheets;
 import it.multicoredev.utils.AssetPool;
@@ -59,6 +56,8 @@ public class LevelEditorScene extends Scene {
     @Override
     public void init() {
         camera = new Camera();
+
+        initResources();
 
         levelEditor.addComponent(new MouseControls());
         levelEditor.addComponent(new GridLines());
@@ -137,5 +136,14 @@ public class LevelEditorScene extends Scene {
         }
 
         ImGui.end();
+    }
+
+    private void initResources() {
+        gameObjects.forEach(go -> {
+            if (go.getComponent(SpriteRenderer.class) != null) {
+                SpriteRenderer sr = go.getComponent(SpriteRenderer.class);
+                if (sr.getTexture() != null) sr.setTexture(AssetPool.getTexture(sr.getTexture().getPath()));
+            }
+        });
     }
 }

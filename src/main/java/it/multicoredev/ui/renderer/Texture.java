@@ -46,16 +46,30 @@ import static org.lwjgl.stb.STBImage.*;
 public class Texture {
     private String path;
 
-    private int id;
+    private transient int id;
     private int width;
     private int height;
 
     public Texture() {
-
+        this.id = -1;
+        this.width = -1;
+        this.height = -1;
     }
 
     public Texture(File file) {
         init(file);
+    }
+
+    public Texture(int width, int height) {
+        this.width = width;
+        this.height = height;
+        this.path = "generated";
+
+        // Generate texture on GPU
+        id = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, id);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
     }
 
     public void bind() {
@@ -64,6 +78,10 @@ public class Texture {
 
     public void unbind() {
         glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    public String getPath() {
+        return path;
     }
 
     public int getId() {
