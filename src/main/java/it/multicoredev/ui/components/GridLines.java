@@ -1,6 +1,8 @@
-package it.multicoredev.ui;
+package it.multicoredev.ui.components;
 
-import org.joml.Matrix4f;
+import it.multicoredev.ui.Window;
+import it.multicoredev.ui.renderer.DebugDraw;
+import it.multicoredev.utils.Settings;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -35,58 +37,36 @@ import org.joml.Vector3f;
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-public class Camera {
-    private Matrix4f projection;
-    private Matrix4f view;
-    private Matrix4f inverseProjection;
-    private Matrix4f inverseView;
-    private Vector2f projectionSize = new Vector2f(32.0f * 40.0f, 32.0f * 21.0f);
-    public Vector2f position;
+public class GridLines extends Component {
 
-    public Camera(Vector2f position) {
-        this.position = position;
-        this.projection = new Matrix4f();
-        this.view = new Matrix4f();
-        this.inverseProjection = new Matrix4f();
-        this.inverseView = new Matrix4f();
-        adjustProjection();
-    }
+    @Override
+    public void update(float dt) {
+        Vector2f cameraPos = Window.getScene().camera().position;
+        Vector2f projectionSize = Window.getScene().camera().getProjectionSize();
 
-    public Camera() {
-        this(new Vector2f(0, 0));
-    }
+        int firstX = ((int) (cameraPos.x / Settings.GRID_WIDTH) - 1) * Settings.GRID_WIDTH;
+        int firstY = ((int) (cameraPos.y / Settings.GRID_HEIGHT) - 1) * Settings.GRID_HEIGHT;
 
-    public void adjustProjection() {
-        projection.identity();
-        projection.ortho(0.0f, projectionSize.x, 0.0f, projectionSize.y, 0.0f, 100.0f);
-        projection.invert(inverseProjection);
-    }
+        int numHLines = (int) (projectionSize.y / Settings.GRID_HEIGHT) + 2;
+        int numVLines = (int) (projectionSize.x / Settings.GRID_WIDTH) + 2;
 
-    public Matrix4f getView() {
-        Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
-        Vector3f cameraUp = new Vector3f(0.0f, 1.0f, 0.0f);
+        int width = (int) projectionSize.x + Settings.GRID_WIDTH;
+        int height = (int) projectionSize.y + Settings.GRID_HEIGHT;
 
-        view.identity();
-        view.lookAt(new Vector3f(position.x, position.y, 20.0f), cameraFront.add(position.x, position.y, 0.0f), cameraUp);
+        Vector3f color = new Vector3f(0.5f, 0.5f, 0.5f);
 
-        view.invert(inverseView);
+        int maxLines = Math.max(numHLines, numVLines);
+        for (int i = 0; i < maxLines; i++) {
+            int x = firstX + Settings.GRID_WIDTH * i;
+            int y = firstY + Settings.GRID_HEIGHT * i;
 
-        return view;
-    }
+            if (i < numHLines) {
+                DebugDraw.addLine(new Vector2f(firstX, y), new Vector2f(x + width, y), color);
+            }
 
-    public Matrix4f getProjection() {
-        return projection;
-    }
-
-    public Matrix4f getInverseProjection() {
-        return inverseProjection;
-    }
-
-    public Matrix4f getInverseView() {
-        return inverseView;
-    }
-
-    public Vector2f getProjectionSize() {
-        return projectionSize;
+            if (i < numVLines) {
+                DebugDraw.addLine(new Vector2f(x, firstY), new Vector2f(x, y + height), color);
+            }
+        }
     }
 }

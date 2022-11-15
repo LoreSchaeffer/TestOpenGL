@@ -5,18 +5,14 @@ import imgui.ImVec2;
 import it.multicoredev.ui.Camera;
 import it.multicoredev.ui.GameObject;
 import it.multicoredev.ui.Prefabs;
-import it.multicoredev.ui.Transform;
+import it.multicoredev.ui.components.GridLines;
 import it.multicoredev.ui.components.MouseControls;
 import it.multicoredev.ui.components.Sprite;
-import it.multicoredev.ui.components.SpriteRenderer;
 import it.multicoredev.ui.components.SpriteSheet;
 import it.multicoredev.ui.registries.Scenes;
 import it.multicoredev.ui.registries.SpriteSheets;
 import it.multicoredev.utils.AssetPool;
 import org.joml.Vector2f;
-import org.joml.Vector4f;
-
-import static it.multicoredev.App.LOGGER;
 
 /**
  * BSD 3-Clause License
@@ -53,7 +49,8 @@ public class LevelEditorScene extends Scene {
     private SpriteSheet decorationsAndBlocks;
     private SpriteSheet icons;
     private SpriteSheet pipes;
-    MouseControls mouseControls = new MouseControls();
+
+    GameObject levelEditor = new GameObject("LevelEditor");
 
     public LevelEditorScene() {
 
@@ -63,11 +60,14 @@ public class LevelEditorScene extends Scene {
     public void init() {
         camera = new Camera();
 
+        levelEditor.addComponent(new MouseControls());
+        levelEditor.addComponent(new GridLines());
+
         decorationsAndBlocks = AssetPool.getSpriteSheet(SpriteSheets.DECORATIONS_AND_BLOCKS);
         icons = AssetPool.getSpriteSheet(SpriteSheets.ICONS);
         pipes = AssetPool.getSpriteSheet(SpriteSheets.PIPES);
 
-        if (loadedLevel) {
+        if (loadedLevel && !gameObjects.isEmpty()) {
             //activeGameObject = getGameObject("goomba");
             return;
         }
@@ -89,30 +89,12 @@ public class LevelEditorScene extends Scene {
         addGameObject(s2);*/
     }
 
-    //private int spriteIndex = 9;
-    //private float spriteFlipTime = 0.2f;
-    //private float spriteFlipTimeLeft = 0.0f;
-
     @Override
     public void update(float dt) {
         //LOGGER.info("FPS: " + (1f / dt));
+        levelEditor.update(dt);
 
-        mouseControls.update(dt);
-
-        /*spriteFlipTimeLeft -= dt;
-        if (spriteFlipTimeLeft <= 0) {
-            spriteFlipTimeLeft = spriteFlipTime;
-            spriteIndex++;
-            if (spriteIndex > 13) {
-                spriteIndex = 9;
-            }
-
-            getGameObject("mario").getComponent(SpriteRenderer.class).setSprite(AssetPool.getSpriteSheet(SpriteSheets.SPRITESHEET).getSprite(spriteIndex));
-        }*/
-
-
-        gameObjects.forEach(go -> go.update(dt));
-
+        gameObjects.forEach(gameObject -> gameObject.update(dt));
         renderer.render();
 
         save(Scenes.LEVEL_EDITOR.getPath());
@@ -139,10 +121,10 @@ public class LevelEditorScene extends Scene {
 
             ImGui.pushID(i);
             if (ImGui.imageButton(id, spriteWidth, spriteHeight, texCoords[2].x, texCoords[0].y, texCoords[0].x, texCoords[2].y)) {
-                GameObject obj = Prefabs.generateSpriteObject(sprite, spriteWidth, spriteHeight, 0);
+                GameObject obj = Prefabs.generateSpriteObject(sprite, 32, 32, 0);
 
                 // Attach object to mouse cursor
-                mouseControls.pickUpObject(obj);
+                levelEditor.getComponent(MouseControls.class).pickUpObject(obj);
             }
             ImGui.popID();
 

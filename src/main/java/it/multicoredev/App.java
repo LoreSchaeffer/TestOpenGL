@@ -43,6 +43,7 @@ public class App {
             .setPrettyPrinting()
             .disableHtmlEscaping()
             .create();
+    public static final boolean DEBUG = true;
 
     void run() {
         Window window = Window.create(1920, 1080, "Test Window");

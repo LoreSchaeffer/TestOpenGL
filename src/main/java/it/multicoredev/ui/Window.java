@@ -6,6 +6,7 @@ import it.multicoredev.ui.listeners.MouseListener;
 import it.multicoredev.ui.registries.Scenes;
 import it.multicoredev.ui.registries.Shaders;
 import it.multicoredev.ui.registries.SpriteSheets;
+import it.multicoredev.ui.renderer.DebugDraw;
 import it.multicoredev.ui.scenes.Scene;
 import it.multicoredev.utils.AssetPool;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -186,10 +187,15 @@ public class Window {
             // Poll events
             glfwPollEvents();
 
+            DebugDraw.beginFrame();
+
             glClearColor(windowColor[0], windowColor[1], windowColor[2], windowColor[3]);
             glClear(GL_COLOR_BUFFER_BIT);
 
-            if (dt >= 0) currentScene.update(dt);
+            if (dt >= 0) {
+                DebugDraw.draw();
+                currentScene.update(dt);
+            }
 
             imGuiLayer.update(dt, currentScene);
             glfwSwapBuffers(windowId);

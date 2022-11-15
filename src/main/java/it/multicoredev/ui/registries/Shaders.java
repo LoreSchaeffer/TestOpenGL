@@ -33,4 +33,5 @@ package it.multicoredev.ui.registries;
  */
 public class Shaders {
     public static final String DEFAULT = "assets/shaders/default.glsl";
+    public static final String DEBUG_LINE_2D = "assets/shaders/debug_line_2d.glsl";
 }
