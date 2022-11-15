@@ -5,6 +5,7 @@ import org.lwjgl.BufferUtils;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Objects;
 
 import static it.multicoredev.App.LOGGER;
 import static org.lwjgl.opengl.ARBInternalformatQuery2.GL_TEXTURE_2D;
@@ -118,5 +119,18 @@ public class Texture {
         } else {
             LOGGER.error("Failed to load texture: " + file.getPath());
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Texture texture = (Texture) o;
+        return id == texture.id && width == texture.width && height == texture.height && Objects.equals(path, texture.path);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(path, id, width, height);
     }
 }
